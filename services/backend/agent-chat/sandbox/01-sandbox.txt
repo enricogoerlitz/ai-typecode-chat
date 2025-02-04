@@ -1,0 +1,74 @@
+
+
+pip install pymupdf
+
+import fitz  # PyMuPDF
+
+# 1. exract text
+def extract_pdf_text(pdf_path):
+    doc = fitz.open(pdf_path)
+    pages = []
+    for page_num in range(doc.page_count):
+        page = doc.load_page(page_num)
+        text = page.get_text("text")
+        pages.append((page_num + 1, text))  # Store page number and content
+    return pages
+
+pdf_path = 'your_pdf.pdf'
+pdf_text = extract_pdf_text(pdf_path)
+
+
+# 2. Generate Embedding each page's text
+
+import openai
+
+openai.api_key = "your-openai-api-key"
+
+def generate_embedding(text):
+    response = openai.Embedding.create(
+        input=text,
+        model="text-embedding-ada-002"
+    )
+    return response["data"][0]["embedding"]
+
+# Embedding each page's text
+embeddings = []
+for page_num, page_text in pdf_text:
+    embedding = generate_embedding(page_text)
+    embeddings.append({
+        "id": f"doc1_page{page_num}",
+        "content": page_text,
+        "embedding": embedding,
+        "document_id": "doc1",  # Reference to the overall document
+        "page_number": page_num
+    })
+
+# 3. Store Metadata with the Embedding
+
+from azure.search.documents import SearchClient
+from azure.core.credentials import AzureKeyCredential
+
+# Initialize SearchClient
+service_endpoint = "https://your-search-instance.search.windows.net"
+admin_key = "your-search-admin-key"
+index_name = "your-index-name"
+
+search_client = SearchClient(service_endpoint, index_name, AzureKeyCredential(admin_key))
+
+# Upload embeddings to Azure Search
+result = search_client.upload_documents(documents=embeddings)
+print(f"Uploaded {len(result)} documents.")
+
+
+# 5. Perform a Query and Get Document + Page Information
+
+query_embedding = generate_embedding("AI in healthcare")
+
+response = search_client.search(
+    search_text="",
+    vectors=[{"value": query_embedding, "fields": "embedding", "k": 3}],  # top 3 results
+)
+
+for result in response:
+    print(f"Found in Document ID: {result['document_id']} on Page: {result['page_number']}")
+    print(f"Content: {result['content'][:200]}...")  # First 200 characters
