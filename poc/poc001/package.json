@@ -1,0 +1,15 @@
+{
+  "name": "poc001",
+  "version": "1.0.0",
+  "main": "receiving-updates.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.9"
+  }
+}
