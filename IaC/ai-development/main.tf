@@ -1,9 +1,9 @@
 resource "azurerm_resource_group" "main" {
-  name     = "emtec-ai-development-${terraform.workspace}-gwc-rg"
+  name     = "${var.project_name}-${terraform.workspace}-gwc-rg"
   location = var.germanywestcentral_location
 
   tags = merge(var.default_tags, {
-    "env" = terraform.workspace
+    "Environment" = terraform.workspace
   })
 
   lifecycle {

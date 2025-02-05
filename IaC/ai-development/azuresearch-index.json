@@ -1,0 +1,158 @@
+{
+    "name": "device-type-agent-index-001",
+    "fields": [
+        {
+            "name": "id",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": false,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": true
+        },
+        {
+            "name": "deviceID",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false
+        },
+        {
+            "name": "deviceTypeID",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false
+        },
+        {
+            "name": "documentID",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false
+        },
+        {
+            "name": "documentName",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": false,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "analyzer": "standard"
+        },
+        {
+            "name": "documentPageNumber",
+            "type": "Edm.Int32",
+            "searchable": false,
+            "filterable": true,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false
+        },
+        {
+            "name": "documentPageContent",
+            "type": "Edm.String",
+            "searchable": true,
+            "filterable": false,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "analyzer": "standard"
+        },
+        {
+            "name": "documentPageContentEmbedding",
+            "type": "Collection(Edm.Single)",
+            "searchable": true,
+            "filterable": false,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false,
+            "dimensions": 3072,
+            "vectorSearchProfile": "contentVector_profile"
+        },
+        {
+            "name": "metadata_json",
+            "type": "Edm.String",
+            "searchable": false,
+            "filterable": false,
+            "retrievable": true,
+            "stored": true,
+            "sortable": false,
+            "facetable": false,
+            "key": false
+        }
+    ],
+    "scoringProfiles": [],
+    "suggesters": [],
+    "analyzers": [],
+    "normalizers": [],
+    "tokenizers": [],
+    "tokenFilters": [],
+    "charFilters": [],
+    "similarity": {
+        "@odata.type": "#Microsoft.Azure.Search.BM25Similarity"
+    },
+    "semantic": {
+        "configurations": [
+            {
+                "name": "azureml-default",
+                "prioritizedFields": {
+                    "titleField": {
+                        "fieldName": "documentName"
+                    },
+                    "prioritizedContentFields": [
+                        {
+                            "fieldName": "documentPageContent"
+                        }
+                    ],
+                    "prioritizedKeywordsFields": []
+                }
+            }
+        ]
+    },
+    "vectorSearch": {
+        "algorithms": [
+            {
+                "name": "contentVector_config",
+                "kind": "hnsw",
+                "hnswParameters": {
+                    "metric": "cosine",
+                    "m": 4,
+                    "efConstruction": 400,
+                    "efSearch": 500
+                }
+            }
+        ],
+        "profiles": [
+            {
+                "name": "contentVector_profile",
+                "algorithm": "contentVector_config"
+            }
+        ],
+        "vectorizers": [],
+        "compressions": []
+    }
+}

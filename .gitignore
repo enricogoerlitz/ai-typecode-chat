@@ -1,3 +1,5 @@
+resources/data/imt
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -159,3 +161,16 @@ yarn-debug.log*
 yarn-error.log*
 package-lock.json
 .DS_Store
+
+# Terraform
+*.tfstate
+*.tfstate.*
+crash.log
+*.tfvars
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+.terraform/
+.terraform.lock.hcl
+.vscode/PythonImportHelper-v2-Completion.json

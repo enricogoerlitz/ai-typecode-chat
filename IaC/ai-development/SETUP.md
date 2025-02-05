@@ -31,3 +31,5 @@ $ tfapply
 ```
 
 ## Manual Tasks
+
+1. Create AI Search Index (JSON) [using this config](azuresearch-index.json)
