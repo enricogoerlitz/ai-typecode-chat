@@ -1,10 +1,18 @@
 # flake8: noqa
 import time
+
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
+
 import gvars
 
 
-if gvars.DEBUG:
-    time.sleep(1)
+if gvars.DEBUG == "true":
+    print("DEBUG WAIT")
+    time.sleep(2)
 
 
 from service import create_app

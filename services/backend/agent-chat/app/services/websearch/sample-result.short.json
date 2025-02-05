@@ -1,0 +1,176 @@
+{
+    "organic_results": [
+      {
+        "position": 1,
+        "block_position": 3,
+        "title": "Wahl zum 21. Deutschen Bundestag am 23. Februar 2025",
+        "link": "https://www.bundeswahlleiterin.de/bundestagswahlen/2025.html",
+        "domain": "www.bundeswahlleiterin.de",
+        "displayed_link": "https://www.bundeswahlleiterin.de › bundestagswahlen",
+        "snippet": "Wahl zum 21. Deutschen Bundestag am 23. Februar 2025. Der Deutsche Bundestag ist die Volksvertretung der Bundesrepublik Deutschland und als maßgebliches ...",
+        "prerender": false,
+        "sitelinks": {
+          "inline": [
+            {
+              "title": "Informationen für Wählende",
+              "link": "https://www.bundeswahlleiterin.de/bundestagswahlen/2025/informationen-waehler.html"
+            },
+            {
+              "title": "Termine und Fristen",
+              "link": "https://www.bundeswahlleiterin.de/bundestagswahlen/2025/termine.html"
+            },
+            {
+              "title": "Wahlkreise",
+              "link": "https://www.bundeswahlleiterin.de/bundestagswahlen/2025/wahlkreiseinteilung.html"
+            },
+            {
+              "title": "Mitteilungen",
+              "link": "https://www.bundeswahlleiterin.de/bundestagswahlen/2025/mitteilungen.html"
+            }
+          ]
+        },
+        "rich_snippet": {
+          "top": {
+            "detected_extensions": {},
+            "extensions": [
+              "‎Informationen für Wählende",
+              "‎Termine und Fristen",
+              "‎Wahlkreise",
+              "‎Mitteilungen"
+            ]
+          }
+        }
+      },
+      {
+        "position": 2,
+        "block_position": 4,
+        "title": "Bundestagswahl 2025",
+        "link": "https://www.bundestag.de/wahl",
+        "domain": "www.bundestag.de",
+        "displayed_link": "https://www.bundestag.de › wahl",
+        "snippet": "Wahl zum 21. Deutschen Bundestag am 23. Februar 2025 ... Wähler stehen Schlange in einem Wahlraum. ... Die Wahlen zum Bundestag sind allgemein, unmittelbar, frei, ...",
+        "prerender": false,
+        "rich_snippet": {
+          "top": {
+            "detected_extensions": {},
+            "extensions": [
+              "‎Wahl zum 21. Deutschen...",
+              "‎Vorgezogene Neuwahl mit..."
+            ]
+          }
+        }
+      },
+      {
+        "position": 3,
+        "block_position": 6,
+        "title": "Bundestagswahl 2025",
+        "link": "https://de.wikipedia.org/wiki/Bundestagswahl_2025",
+        "domain": "de.wikipedia.org",
+        "displayed_link": "https://de.wikipedia.org › wiki › Bundestagswahl_2025",
+        "snippet": "Die Wahl zum 21. Deutschen Bundestag wird als vorgezogene Neuwahl am 23. Februar 2025 stattfinden. Voraussetzung für diesen Termin war die gescheiterte ...",
+        "prerender": false,
+        "sitelinks": {
+          "inline": [
+            {
+              "title": "Umfragen und Prognosen",
+              "link": "https://de.wikipedia.org/wiki/Bundestagswahl_2025/Umfragen_und_Prognosen"
+            },
+            {
+              "title": "Bündnis Sahra Wagenknecht",
+              "link": "https://de.wikipedia.org/wiki/B%C3%BCndnis_Sahra_Wagenknecht"
+            },
+            {
+              "title": "Bruch der Ampelkoalition",
+              "link": "https://de.wikipedia.org/wiki/Bruch_der_Ampelkoalition_in_Deutschland_2024"
+            }
+          ]
+        },
+        "rich_snippet": {
+          "top": {
+            "detected_extensions": {},
+            "extensions": [
+              "‎Umfragen und Prognosen",
+              "‎Bündnis Sahra Wagenknecht",
+              "‎Bruch der Ampelkoalition"
+            ]
+          }
+        }
+      },
+      {
+        "position": 4,
+        "block_position": 7,
+        "title": "Wahl zum 21. Deutschen Bundestag am 23. Februar 2025",
+        "link": "https://www.bundestag.de/parlament/bundestagswahl/inhalt-1021204",
+        "domain": "www.bundestag.de",
+        "displayed_link": "https://www.bundestag.de › parlament › inhalt-1021204",
+        "snippet": "Bundespräsident Frank-Walter Steinmeier hat am Freitag, 27. Dezember, den 20. Deutschen Bundestag gemäß Artikel 68 des Grundgesetzes aufgelöst.",
+        "prerender": false
+      },
+      {
+        "position": 5,
+        "block_position": 8,
+        "title": "Informationen zur Bundestagswahl 2025 - Bundesregierung.de",
+        "link": "https://www.bundesregierung.de/breg-de/schwerpunkte-der-bundesregierung/bundestagswahl-2025",
+        "domain": "www.bundesregierung.de",
+        "displayed_link": "https://www.bundesregierung.de › breg-de › bundestag...",
+        "snippet": "2025 findet die Bundestagswahl statt. Wie funktioniert die Wahl? Wie sicher ist die Wahl? Finden Sie hier zuverlässige Informationen.",
+        "prerender": false
+      }
+    ],
+    "knowledge_graph": {
+      "id": "/g/11ry982h__",
+      "title": "Bundestagswahl 2025",
+      "website": "https://de.wikipedia.org/wiki/Bundestagswahl_2025",
+      "source": {
+        "name": "Wikipedia",
+        "link": "https://de.wikipedia.org/wiki/Bundestagswahl_2025"
+      },
+      "description": "Die Wahl zum 21. Deutschen Bundestag wird als vorgezogene Neuwahl am 23. Februar 2025 stattfinden. Voraussetzung für diesen Termin war die gescheiterte Vertrauensfrage von Bundeskanzler Olaf Scholz vom 16. Dezember 2024, der diese und vorgezogene Neuwahlen nach dem Bruch der Ampelkoalition am 6.",
+      "known_attributes": [
+        {
+          "attribute": "kc:/time/event:location2",
+          "value": "Deutschland",
+          "name": "kc:/time/event:location2",
+          "link": "https://www.google.com/search?num=5&sca_esv=392315896b6345ed&hl=de&q=Deutschland&si=APYL9bu1Sl4M4TWndGcDs6ZL5WJXWNYEL_kgEEwAe0iMZIocdZmYNuT6v7hNnkScTa2BAlQzWnEAmBLARY68GtczKp5Hwe2Og8ag5APtl1pMGuncwPzxCmg0kE97Is4ne01yXb1pUvXN9J9i7splUAyl-vZCK_j3b6ZgRhUK2asvmLsvcq44oMnJ4v5htn_gRhHncjjyObA6&sa=X&ved=2ahUKEwi1t4C0rK2LAxV7JBAIHc3OH5cQmxMoAHoECBgQAg"
+        }
+      ],
+      "block_position": 1
+    },
+    "top_stories": [
+      {
+        "title": "Die Bundestagswahl 2025 und die Kandidaten in Hagen",
+        "link": "https://www.wp.de/lokales/hagen/article408235476/die-bundestagswahl-2025-und-die-kandidaten-in-hagen.html",
+        "visible_initially": true,
+        "source": "wp.de",
+        "date": "vor 3 Stunden",
+        "date_utc": "2025-02-05T17:14:43.717Z",
+        "block_position": 2
+      },
+      {
+        "title": "Bundestagswahl 2025: Wahlforum des Seniorenbeirates",
+        "link": "https://meetingpoint-brandenburg.de/neuigkeiten/artikel/186688-bundestagswahl-2025-wahlforum-des-seniorenbeirates",
+        "visible_initially": true,
+        "source": "Meetingpoint Brandenburg",
+        "date": "vor 1 Stunde",
+        "block_position": 2
+      },
+      {
+        "title": "Wahlkreis Hamburg-Mitte: Die Wahlergebnisse der Bundestagswahl 2025 im Überblick",
+        "link": "https://www.augsburger-allgemeine.de/politik/ergebnisse-hamburg-mitte-bundestagswahl-2025-die-wahlergebnisse-im-ueberblick-104443560",
+        "visible_initially": true,
+        "source": "Augsburger Allgemeine",
+        "date": "vor 45 Minuten",
+        "date_utc": "2025-02-05T19:29:43.721Z",
+        "block_position": 2
+      },
+      {
+        "title": "Bundestagswahl 2025: Was die Parteien zu Europa sagen",
+        "link": "https://www.ihre-vorsorge.de/soziales/nachrichten/bundestagswahl-2025-was-die-parteien-zu-europa-sagen",
+        "visible_initially": true,
+        "source": "Ihre-Vorsorge.de",
+        "date": "vor 4 Stunden",
+        "date_utc": "2025-02-05T16:14:43.723Z",
+        "block_position": 2
+      }
+    ]
+  }

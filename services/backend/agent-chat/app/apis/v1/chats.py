@@ -1,6 +1,7 @@
 # flake8: noqa
 from flask import request, Blueprint
 
+from services.rest import chat_service
 from exc import http_errors
 
 
@@ -44,7 +45,10 @@ def handle_chat_messages(id: str):
         case "GET":
             return http_errors.not_implemented()
         case "POST":
-            return http_errors.not_implemented()
+            return chat_service.handle_post_chat_message(
+                chat_id=id,
+                payload=request.get_json()
+            )
     return http_errors.not_implemented()
 
 
