@@ -1,11 +1,13 @@
 # flake8: noqa
 
 import json
-import time
+import traceback
+
 from typing import Iterator
 
+from logger import logger
+from exc import errors
 from services.ai.client import aiclient
-from services.ai.promptflow.v1 import promptflow
 from services.websearch.v1.websearch import (
     serp_client, SERPResponseObject,
     fetch_url_content
@@ -14,17 +16,25 @@ from database.vectorsearch import vector_search_index
 from utils.chat import (
     ChatPOSTMessagePayloadV1,
     StreamResponse,
-    ChatPOSTYieldStateObject
+    ChatPOSTYieldStateObject,
+    INITIALIZE_CONNECTION,
+    OPTIMIZE_WEB_SEARCH_QUERY,
+    EXECUTE_WEB_SEARCH,
+    EXECUTE_DEEP_SEARCH,
+    OPTIMIZE_WEB_SEARCH_RESULT,
+    OPTIMIZE_VECTOR_SEARCH_QUERY,
+    EXECUTE_VECTOR_SEARCH,
+    EXECUTE_GENERATE_FINAL_MESSAGE
 )
 
 
 def execute(cnf: ChatPOSTMessagePayloadV1) -> Iterator[bytes]:
-    steps = cnf.get_steps()
+    # 0. Prepare state and data
     yield_state = ChatPOSTYieldStateObject(
-        steps=steps,
-        current_step="INITIALIZE_CONNECTION",
+        steps=cnf.get_steps(),
+        current_step=INITIALIZE_CONNECTION,
         status_code=200,
-        message="Initial message :)\n",
+        message="",
         error=None
     )
 
@@ -37,27 +47,34 @@ def execute(cnf: ChatPOSTMessagePayloadV1) -> Iterator[bytes]:
         vectorsearch_result = {"result_string": "no results"}
 
         # 1. fetch chat history (count in payload)
+        # TODO: fetch chat history (count in payload)
         chat_history = []
 
         # 2. execute websearch
         if cnf.websearch_enabled:
-            websearch_result = promptflow._exec_websearch(
+            for websearch_result in _exec_websearch(
                 yield_state=yield_state,
                 user_message=user_message,
                 is_deep_search=cnf.websearch_depp_search_enabled,
                 max_result_count=cnf.websearch_max_result_count,
-                optimize_query=cnf.websearch_optimize_web_search_query
-            )
+                optimize_query=cnf.websearch_optimize_web_search_query,
+                optimize_websearch_result=cnf.websearch_optimize_web_search_results,
+                model=cnf.model_name
+            ):
+                yield yield_state.to_yield()
 
         # 3. execute vectorsearch
         if cnf.vectorsearch_enabled:
-            vectorsearch_result = promptflow._exec_vector_search(
+            for vectorsearch_result in _exec_vector_search(
+                yield_state=yield_state,
                 user_message=user_message,
                 use_websearch_result=cnf.vectorsearch_use_websearch_results,
                 websearch_result_str=websearch_result.get("result_string", "no results"),
                 optimize_vectorsearch_query=cnf.vectorsearch_optimize_vector_search_query,
-                max_result_count=cnf.vectorsearch_max_result_count
-            )
+                max_result_count=cnf.vectorsearch_max_result_count,
+                model=cnf.model_name
+            ):
+                yield yield_state.to_yield()
 
         # 4. execute final chat message
         for _ in _exec_generate_final_response(
@@ -70,33 +87,21 @@ def execute(cnf: ChatPOSTMessagePayloadV1) -> Iterator[bytes]:
         ):
             yield yield_state.to_yield()
 
+    except errors.AIClientRateLimitError as e:
+        logger.warning(e)
 
-    except Exception as e:
-        print("ERR", str(e))
-        yield_state.error = "Unexpected server error occurred."
-        yield_state.status_code = 500
+        yield_state.error = str(e)
+        yield_state.status_code = 429
 
         yield yield_state.to_yield()
 
+    except (errors.RequestsException, Exception) as e:
+        logger.error(e, exc_info=True)
 
-def __execute_t(cnf: ChatPOSTMessagePayloadV1) -> Iterator[StreamResponse]:
-    steps = [
-        {"step": 1, "message": "Sending data to API1"},
-        {"step": 2, "message": "Sending data to API2"},
-        {"step": 3, "message": "Parsing responses"},
-        {"step": 4, "message": "Generating response"},
-        {"step": 5, "message": "Completed!"}
-    ]
+        yield_state.error = "An unexpected error has occored."
+        yield_state.status_code = 500
 
-    yield json.dumps(steps[0]) + "\n"
-    time.sleep(1)
-    yield json.dumps(steps[1]) + "\n"
-    time.sleep(1)
-    yield json.dumps(steps[4]) + "\n"
-
-    # for step in steps:
-    #     yield json.dumps(step) + "\n"
-    #     time.sleep(2)
+        yield yield_state.to_yield()
 
 
 def _exec_websearch(
@@ -104,48 +109,79 @@ def _exec_websearch(
         user_message: str,
         is_deep_search: bool,
         max_result_count: int,
-        optimize_query: bool
+        optimize_query: bool,
+        optimize_websearch_result: bool,
+        model: str
 ) -> Iterator[dict]:
     google_query = user_message
     if optimize_query:
-        yield_state.next_step("OPTIMIZE_WEB_SEARCH_QUERY")
-        google_query = _optimize_websearch_query(user_message)
+        yield_state.next_step(OPTIMIZE_WEB_SEARCH_QUERY)
+        yield_state.append_message("\nOptimizing your question for websearch to:\n")
+        yield
+
+        for google_query in _optimize_websearch_query(
+            yield_state=yield_state,
+            user_message=user_message,
+            model=model
+        ):
+            yield
+
+    yield_state.next_step(EXECUTE_WEB_SEARCH)
+    yield_state.append_message("\nSearching the web for you...:\n")
+    yield
 
     serp_obj = serp_client.search(
         query=google_query,
         max_results=max_result_count
     )
 
+    yield_state.append_message(json.dumps(serp_obj.obj, indent=2))
+    yield
+
     if is_deep_search:
-        _exec_deep_websearch(
+        for _ in _exec_deep_websearch(
+            yield_state=yield_state,
             user_message=user_message,
-            serp_obj=serp_obj
-        )
+            serp_obj=serp_obj,
+            model=model
+        ):
+            yield
+
+    if optimize_websearch_result:
+        # TODO: implement; kein yield, einfach batch abfrage!
+        pass
     
-    return {
+    yield {
         "query_result": serp_obj,
         "result_string": str(serp_obj.obj)
     }
 
 
 def _exec_vector_search(
+        yield_state: ChatPOSTYieldStateObject,
         user_message: str,
         use_websearch_result: str,
         websearch_result_str: str,
         optimize_vectorsearch_query: bool,
-        max_result_count: int
-) -> dict:
+        max_result_count: int,
+        model: str
+) -> Iterator[dict]:
     if use_websearch_result:
         optimize_vectorsearch_query = True
 
     message = user_message
 
     if optimize_vectorsearch_query:
-        message = _optimize_vectorsearch_query(
+        for message in _optimize_vectorsearch_query(
+            yield_state=yield_state,
             user_message=user_message,
             use_websearch_result=use_websearch_result,
-            websearch_result_str=websearch_result_str
-        )
+            websearch_result_str=websearch_result_str,
+            model=model
+        ):
+            yield
+
+    yield_state.next_step(EXECUTE_VECTOR_SEARCH)
 
     embeddings = aiclient.embedding_model.embed(message)[0]
 
@@ -167,23 +203,34 @@ def _exec_vector_search(
             result_number=i
         )
 
-    return {
+    yield {
         "query_result": search_results,
         "result_string": search_results_str
     }
 
 
 def _exec_deep_websearch(
+        yield_state: ChatPOSTYieldStateObject,
         serp_obj: SERPResponseObject,
-        user_message: str
-) -> None:
+        user_message: str,
+        model: str
+) -> Iterator:
+    yield_state.next_step(EXECUTE_DEEP_SEARCH)
+    yield_state.append_message("\nExecuting deep search for you:\n")
+    yield
+
     deep_search_results = []
     for link in serp_obj.get_links():
+        yield_state.append_message(f"Processing link: {link}\n")
+
         html_text = fetch_url_content(link)
-        summary = _summarize_html_content(
+        for summary in _summarize_html_content(
+            yield_state=yield_state,
             user_message=user_message,
-            html_content=html_text
-        )
+            html_content=html_text,
+            model=model
+        ):
+            yield
 
         deep_search_results.append({
             "requested_link": link,
@@ -201,7 +248,8 @@ def _exec_generate_final_response(
         vectorsearch_result: dict,
         model: str
 ) -> Iterator[ChatPOSTYieldStateObject]:
-    yield_state.next_step("EXECUTE_GENERATE_FINAL_MESSAGE")
+    yield_state.next_step(EXECUTE_GENERATE_FINAL_MESSAGE)
+    yield_state.append_message("\n\n\n### Final result:\n")
 
     websearch_result_str = websearch_result.get("result_string", "no results")
     vectorsearch_result_str = vectorsearch_result.get("result_string", "")
@@ -247,11 +295,6 @@ Here is the provided information:
 
         yield_state.set_message(new_message)
         yield
-        
-
-    print("\n\n\n---------------SYSTEM-CONTEXT------------------\n\n")
-    print(system_context)
-    print("\n\n---------------------------------\n\n")
 
 
 def _add_vectorsearch_result_string(
@@ -274,7 +317,11 @@ ducument_page_content:
 """.strip()
 
 
-def _optimize_websearch_query(user_message: str, model: str) -> str:
+def _optimize_websearch_query(
+        yield_state: ChatPOSTYieldStateObject,
+        user_message: str,
+        model: str
+) -> Iterator:
 
     system_context = f"""You are an AI assistant specializing in constructing highly effective Google search queries.  
 
@@ -291,25 +338,31 @@ Your goal is to generate an optimized Google search query based on the user's me
 - Avoid including explanations, formatting, or any additional text.  
 """
 
-    resp = aiclient.chat.submit([
+    resp: StreamResponse
+    for resp in aiclient.chat.submit_stream([
         {"role": "system", "content": system_context},
         {"role": "user", "content": user_message},
-    ], model=model)
+    ], model=model, current_message=yield_state.message):
+        new_message = resp.data["message"]
+        if yield_state.message == new_message:
+            continue
 
-    if resp.status_code != 200:
-        print("ERR:", str(resp.text))
-        raise Exception("Error...")
+        yield_state.set_message(new_message)
+        yield
 
-    print("RES:", resp.json()["choices"][0])
-    return resp.json()["choices"][0]["message"]["content"]
-
+    yield resp.data["message"]
 
 def _optimize_vectorsearch_query(
+        yield_state: ChatPOSTYieldStateObject,
         user_message: str,
         use_websearch_result: bool,
         websearch_result_str: str,
         model: str
-) -> str:
+) -> Iterator[str]:
+    yield_state.next_step(OPTIMIZE_VECTOR_SEARCH_QUERY)
+    yield_state.append_message("\n\nWe are optimizing your message for besser vector search:\n")
+    yield
+
     if not use_websearch_result:
         websearch_result_str = "no web search executed."
 
@@ -336,24 +389,27 @@ Here is the provided information:
 {websearch_result_str}  
 """
 
-    resp = aiclient.chat.submit([
+    resp: StreamResponse
+    for resp in aiclient.chat.submit_stream([
         {"role": "system", "content": system_context},
         {"role": "user", "content": user_message},
-    ], model=model)
+    ], model=model, current_message=yield_state.message):
+        new_message = resp.data["message"]
+        if yield_state.message == new_message:
+            continue
 
-    if resp.status_code != 200:
-        print("ERR:", str(resp.text))
-        raise Exception("Error...")
+        yield_state.set_message(new_message)
+        yield
 
-    print("RES:", resp.json()["choices"][0])
-    return resp.json()["choices"][0]["message"]["content"]
+    yield resp.data["message"]
 
 
 def _summarize_html_content(
+        yield_state: ChatPOSTYieldStateObject,
         user_message: str,
         html_content: str,
         model: str
-) -> str:
+) -> Iterator[str]:
     system_context = f"""You are an AI assistant specializing in summarizing poorly structured text based on user queries.
 
 ### Task:  
@@ -372,14 +428,16 @@ Ensure the summary is **concise, relevant, and correct**.
 {html_content}
 """
 
-    resp = aiclient.chat.submit([
+    resp: StreamResponse
+    for resp in aiclient.chat.submit_stream([
         {"role": "system", "content": system_context},
         {"role": "user", "content": user_message},
-    ], model=model)
+    ], model=model, current_message=yield_state.message):
+        new_message = resp.data["message"]
+        if yield_state.message == new_message:
+            continue
 
-    if resp.status_code != 200:
-        print("ERR:", str(resp.text))
-        raise Exception("Error...")
+        yield_state.set_message(new_message)
+        yield
 
-    print("RES:", resp.json()["choices"][0])
-    return resp.json()["choices"][0]["message"]["content"]
+    yield resp.data["message"]

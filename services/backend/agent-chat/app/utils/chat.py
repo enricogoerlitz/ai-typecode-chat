@@ -3,6 +3,16 @@ import json
 from dataclasses import dataclass, asdict
 
 
+INITIALIZE_CONNECTION = "INITIALIZE_CONNECTION"
+OPTIMIZE_WEB_SEARCH_QUERY = "OPTIMIZE_WEB_SEARCH_QUERY"
+EXECUTE_WEB_SEARCH = "EXECUTE_WEB_SEARCH"
+EXECUTE_DEEP_SEARCH = "EXECUTE_DEEP_SEARCH"
+OPTIMIZE_WEB_SEARCH_RESULT = "OPTIMIZE_WEB_SEARCH_RESULT"
+OPTIMIZE_VECTOR_SEARCH_QUERY = "OPTIMIZE_VECTOR_SEARCH_QUERY"
+EXECUTE_VECTOR_SEARCH = "EXECUTE_VECTOR_SEARCH"
+EXECUTE_GENERATE_FINAL_MESSAGE = "EXECUTE_GENERATE_FINAL_MESSAGE"
+
+
 class ChatPOSTMessagePayloadV1:
     def __init__(self, payload: dict):
         self._payload = payload
@@ -24,7 +34,7 @@ class ChatPOSTMessagePayloadV1:
         return self.params.get("chat", {})
 
     @property
-    def model(self) -> dict:
+    def model_dict(self) -> dict:
         return self.params.get("model", {})
 
     @property
@@ -37,7 +47,7 @@ class ChatPOSTMessagePayloadV1:
 
     @property
     def model_name(self) -> str:
-        return self.model.get("name")
+        return self.model_dict.get("name")
 
     @property
     def message_type(self) -> str | None:
@@ -64,6 +74,10 @@ class ChatPOSTMessagePayloadV1:
         return self.websearch.get("optimizeWebSearchQuery", False)
 
     @property
+    def websearch_optimize_web_search_results(self) -> bool:
+        return self.websearch.get("optimizeWebSearchResults", False)
+
+    @property
     def vectorsearch_enabled(self) -> bool:
         return self.vectorsearch.get("enabled", True)
 
@@ -81,30 +95,30 @@ class ChatPOSTMessagePayloadV1:
 
     def get_steps(self) -> dict[dict]:
         steps = {}
-        self._add_step(steps, "INITIALIZE_CONNECTION", "STARTED")
+        self._add_step(steps, INITIALIZE_CONNECTION, "STARTED")
 
         if self.websearch_enabled:
             if self.websearch_optimize_web_search_query:
-                self._add_step(steps, "OPTIMIZE_WEB_SEARCH_QUERY")
+                self._add_step(steps, OPTIMIZE_WEB_SEARCH_QUERY)
 
-            self._add_step(steps, "EXECUTE_WEB_SEARCH")
+            self._add_step(steps, EXECUTE_WEB_SEARCH)
 
             if self.websearch_depp_search_enabled:
-                self._add_step(steps, "EXECUTE_DEEP_SEARCH")
+                self._add_step(steps, EXECUTE_DEEP_SEARCH)
 
             if (
                 self.vectorsearch_enabled and
                 self.vectorsearch_use_websearch_results
             ):
-                self._add_step(steps, "OPTIMIZE_WEB_SEARCH_RESULT")
+                self._add_step(steps, OPTIMIZE_WEB_SEARCH_RESULT)
 
         if self.vectorsearch_enabled:
             if self.vectorsearch_optimize_vector_search_query:
-                self._add_step(steps, "OPTIMIZE_VECTOR_SEARCH_QUERY")
+                self._add_step(steps, OPTIMIZE_VECTOR_SEARCH_QUERY)
 
-            self._add_step(steps, "EXECUTE_VECTOR_SEARCH")
+            self._add_step(steps, EXECUTE_VECTOR_SEARCH)
 
-        self._add_step(steps, "EXECUTE_GENERATE_FINAL_MESSAGE")
+        self._add_step(steps, EXECUTE_GENERATE_FINAL_MESSAGE)
 
         return steps
 
@@ -141,6 +155,9 @@ class ChatPOSTYieldStateObject:
 
     def set_message(self, message: str) -> None:
         self.message = message
+
+    def append_message(self, message: str) -> None:
+        self.message += message
 
 
 @dataclass(frozen=True)

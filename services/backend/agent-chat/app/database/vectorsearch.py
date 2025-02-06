@@ -5,7 +5,7 @@ import gvars
 
 from typing import Literal
 from abc import ABC, abstractmethod
-from requests import Response
+from exc import errors
 
 
 def sanitize_string_for_index_key(name: str) -> str:
@@ -45,8 +45,9 @@ class IVectorSearchIndex(ABC):
                     port="",
                     index_name=""
                 )
-        
-        raise Exception("Not supported err")
+
+        err = f"Index type must be 'AZURE_AI_SEARCH' or 'ELASTICSEARCH'"
+        raise errors.ValueErrorGeneral(err)
 
 
 class AzureAISearchIndex(IVectorSearchIndex):
@@ -68,8 +69,7 @@ class AzureAISearchIndex(IVectorSearchIndex):
         resp = requests.post(self._query_endpoint, headers=headers, json=query)
 
         if resp.status_code != 200:
-            print("err:", resp.text)
-            raise Exception("err")
+            raise errors.VectorSearchRequestException(resp)
 
         return resp.json()["value"]
 
@@ -84,8 +84,7 @@ class AzureAISearchIndex(IVectorSearchIndex):
         resp = requests.post(self._put_endpoint, headers=headers, json=payload)
 
         if resp.status_code != 200:
-            print("err:", resp.text)
-            raise Exception("err")
+            raise errors.VectorSearchRequestException(resp)
 
         return resp.json()
 

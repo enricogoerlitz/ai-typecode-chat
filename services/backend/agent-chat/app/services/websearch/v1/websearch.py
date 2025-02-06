@@ -4,6 +4,7 @@ import re
 import requests
 import gvars
 
+from exc import errors
 from requests import Response
 from bs4 import BeautifulSoup
 
@@ -33,8 +34,7 @@ class SERPResponseObject:
         }
 
         if resp.status_code != 200:
-            print("Err serp obj: ", resp.text)
-            raise Exception("Err at resp")
+            raise errors.RequestsException(resp)
 
         resp_obj: dict = resp.json()
         obj = {"organic_results": [], "knowledge_graph": {}, "top_stories": []}

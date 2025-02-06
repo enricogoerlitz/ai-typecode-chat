@@ -4,6 +4,7 @@ import json
 import gvars
 import requests
 
+from exc import errors
 from abc import ABC, abstractmethod
 from typing import Iterator, Literal
 from requests import Response
@@ -42,8 +43,9 @@ class IAIClient(ABC):
                     chat_endpoint=gvars.OPENAI_API_ENDPOINT_CHAT_COMPLEATIONS,
                     embedding_endpoint=gvars.OPENAI_API_ENDPOINT_EMBEDDINGS
                 )
-            
-        raise Exception("not supported")
+
+        err = f"AIClient type must be 'OPENAI'."
+        raise errors.ValueErrorGeneral(err)
 
 
 class OpenAIChatModel(IChatModel):
@@ -66,8 +68,14 @@ class OpenAIChatModel(IChatModel):
             "messages": messages
         }
 
-        response = requests.post(self._api_url, headers=headers, json=req)
-        return response
+        resp = requests.post(self._api_url, headers=headers, json=req)
+
+        if resp.status_code == 429:
+            raise errors.AIClientRateLimitError(resp)
+        elif resp.status_code != 200:
+            raise errors.RequestsException(resp)
+
+        return resp.json()["choices"][0]["message"]["content"]
 
     def submit_stream(
             self,
@@ -83,9 +91,10 @@ class OpenAIChatModel(IChatModel):
         }
 
         with requests.post(self._api_url, headers=headers, json=req, stream=True) as resp:
-            if resp.status_code != 200:
-                print(f"Error: {resp.status_code}, {resp.text}")
-                raise Exception("error")
+            if resp.status_code == 429:
+                raise errors.AIClientRateLimitError(resp)
+            elif resp.status_code != 200:
+                raise errors.RequestsException(resp)
 
             for line in resp.iter_lines():
                 if line is None:
@@ -111,10 +120,11 @@ class OpenAIChatModel(IChatModel):
             line: str,
             current_message: str
     ) -> StreamResponse:
-        resp_data = {
-            "message": current_message
-        }
         try:
+            resp_data = {
+                "message": current_message
+            }
+
             decoded_line = line.decode("utf-8").strip()
             decoded_line = decoded_line[len("data: "):]
 
@@ -144,18 +154,20 @@ class OpenAIEmbeddingModel(IEmbeddingModel):
             embed_content: str | list[str]
     ) -> list[list[float]]:
         if embed_content is None or embed_content == "":
-            raise Exception("gib input!")
+            raise ValueError(f"The embed_content cannot be '{embed_content}'")
 
         headers = self._get_json_headers()
         data = {
-            "input": embed_content
+            "input": embed_content,
+            "model": "text-embedding-3-large"
         }
 
-        resp = requests.post(self._endpoint, headers=headers, json=data)
+        resp = requests.post(self._api_url, headers=headers, json=data)
 
-        if resp.status_code != 200:
-            print("error:", resp.text)
-            raise Exception("ERR")
+        if resp.status_code == 429:
+            raise errors.AIClientRateLimitError(resp)
+        elif resp.status_code != 200:
+            raise errors.RequestsException(resp)
 
         return [
             embedding["embedding"]
@@ -191,7 +203,7 @@ class OpenAIClient(IAIClient):
         return self._chat
 
     @property
-    def embedding_mdoel(self) -> OpenAIChatModel:
+    def embedding_model(self) -> OpenAIEmbeddingModel:
         return self._embedding_model
 
 
