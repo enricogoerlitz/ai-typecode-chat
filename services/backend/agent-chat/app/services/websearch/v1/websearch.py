@@ -1,9 +1,23 @@
 # flake8: noqa
 
+import re
 import requests
 import gvars
 
 from requests import Response
+from bs4 import BeautifulSoup
+
+
+def fetch_url_content(url: str) -> str:
+    resp = requests.get(url)
+    result_html = resp.text
+    if resp.status_code != 200:
+        result_html = "<p>no content<p>"
+
+    soup = BeautifulSoup(result_html, features="html.parser")
+
+    prep_result = re.sub(r'\n{3,}', '\n\n', soup.text)
+    return prep_result
 
 
 class SERPResponseObject:
@@ -47,7 +61,6 @@ class SERPResponseObject:
 
         return obj
 
-
     def get_links(self) -> list[str]:
         organic_results_links = [
             result.get("link")
@@ -77,6 +90,9 @@ class SERPResponseObject:
                + knowledge_graph_links \
                + top_stories_links
 
+    def set_deep_search_results(self, results: list[dict]) -> None:
+        self.obj["deep_search_results"] = results
+
 
 class WebSearchSERPClient:
     def __init__(
@@ -91,7 +107,7 @@ class WebSearchSERPClient:
             query: str,
             max_results: int,
             country: str = "de"
-    ) -> Response:
+    ) -> SERPResponseObject:
         # DOCS:     https://app.scaleserp.com/playground
         # CREDITS:  https://app.scaleserp.com/account
         params = {
@@ -103,7 +119,8 @@ class WebSearchSERPClient:
         }
 
         response = requests.get(self._url, params)
-        return response
+        serp_obj = SERPResponseObject(response)
+        return serp_obj
 
 
 serp_client = WebSearchSERPClient(api_key=gvars.SERP_API_KEY)

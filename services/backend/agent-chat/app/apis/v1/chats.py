@@ -1,7 +1,6 @@
-# flake8: noqa
 from flask import request, Blueprint
 
-from services.rest import chat_service
+from services.rest.v1 import chat_service
 from exc import http_errors
 
 
@@ -52,7 +51,7 @@ def handle_chat_messages(id: str):
     return http_errors.not_implemented()
 
 
-@bp.route(url(f"{ROUTE}/<string:id>/messages/<string:message_id>"), methods=["GET", "PATCH", "DELETE"])
+@bp.route(url(f"{ROUTE}/<string:id>/messages/<string:message_id>"), methods=["GET", "PATCH", "DELETE"])  # noqa
 def handle_chat_message_by_id(id: str, message_id: str):
     match request.method:
         case "GET":
