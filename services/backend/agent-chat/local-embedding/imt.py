@@ -1,0 +1,85 @@
+# flake8: noqa
+import os
+import re
+import pandas as pd
+import utils
+
+from embedding import embedding_model  # noqa
+from vectorindex import vector_search_index, IMTDeviceTypeDocument  # noqa
+
+
+DATA_FOLDER_PATH = "../../../../resources/data/imt/files"
+XL_FILES_PATH = "../../../../resources/data/imt/files.xlsx"
+XL_DEVICE_TYPES_PATH = "../../../../resources/data/imt/imt_deviceTypes.xlsx"
+
+
+def _sanitize_string_for_index_key(name: str) -> str:
+    return re.sub(r'[^a-zA-Z0-9\-_]', '_', name)
+
+
+def import_imt() -> None:
+    print("\n\n\nSTART LOADING EXCEL FILES")
+    df_files = pd.read_excel(XL_FILES_PATH)[["DokID", "Typcode", "DokName"]]
+    df_device_types = pd.read_excel(XL_DEVICE_TYPES_PATH)[["Typcode", "Gerät ID"]]
+
+    df = pd.merge(df_files, df_device_types, how="inner", on="Typcode")
+
+    errors = []
+    total_count = df["Typcode"].count()
+
+    print(f"START INDEXING: {total_count} FILES\n\n")
+    for idx, row in df.iterrows():
+        cidx = idx + 1
+        doc_name = row["DokName"]
+
+        try:
+            _handle_import(row)
+
+            msg = f"PROCESS: {cidx} / {total_count}\tFile '{doc_name}' successfully indexed.\n"
+            print(msg)
+            # break  # TODO DEBUG!
+        except Exception as e:
+            msg = f"PROCESS: {cidx} / {total_count}\tError at file {doc_name}. Err: {e}\n"
+            print(msg)
+            errors.append(msg)
+
+    print("\n\n\n-------------------- ERRORS --------------------\n\n")
+    if len(errors) == 0:
+        print("No errors :)")
+    else:
+        for err in errors:
+            print(err)
+    print("\n\n------------------ END ERRORS ------------------")
+
+
+
+def _handle_import(row: dict) -> None:
+    typcode = row["Typcode"]
+    doc_id = row["DokID"]
+    doc_name = row["DokName"]
+    device_id = row["Gerät ID"]
+
+    file_path = os.path.join(DATA_FOLDER_PATH, doc_name)
+    text_data = utils.extract_text(file_path)
+
+    if text_data is None:
+        raise Exception(f"File '{doc_name}' not supported.")
+
+    embeddings = embedding_model.embed(text_data)
+
+    documents = [
+        IMTDeviceTypeDocument(
+            id=_sanitize_string_for_index_key(f"{doc_id}_{doc_name}_page_{page_number + 1}"),  # noqa
+            deviceID=device_id,
+            deviceTypeID=typcode,
+            documentID=doc_id,
+            documentName=doc_name,
+            documentPageNumber=page_number + 1,
+            documentPageContent=text_data[page_number],
+            documentPageContentEmbedding=embedding,
+            metadata_json=""
+        )
+        for page_number, embedding in enumerate(embeddings)
+    ]
+
+    vector_search_index.put_documents(documents)

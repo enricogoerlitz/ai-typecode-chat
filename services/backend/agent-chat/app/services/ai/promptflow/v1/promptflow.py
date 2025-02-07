@@ -256,35 +256,35 @@ class AIPromptFlow:
             raise ValueError("Invalid mode. Choose from 'USE_DATA_ONLY', 'USE_HYBRID_PRIORITIZE_DATA', or 'USE_HYBRID'.")
         
         base_context = """You are an AI assistant specializing in retrieving and synthesizing information from multiple sources to provide accurate and relevant answers.
-        You will receive structured data from the following sources:
+You will receive structured data from the following sources:
 
-        1. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may include summarized content or deeper details from specific websites.
-        2. **[DOCUMENT SEARCH RESULTS]** – Information retrieved from relevant documents, selected to provide the most useful insights for the user's query.
-        """
+1. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may include summarized content or deeper details from specific websites.
+2. **[DOCUMENT SEARCH RESULTS]** – Information retrieved from relevant documents, selected to provide the most useful insights for the user's query.
+"""
         
         if mode == "USE_DATA_ONLY":
             additional_context = """
-            Use ONLY the provided sources to generate well-structured, concise, and helpful responses. Do NOT rely on prior knowledge. If no relevant information is found, state that explicitly rather than guessing.
-            """
+Use ONLY the provided sources to generate well-structured, concise, and helpful responses. Do NOT rely on prior knowledge. If no relevant information is found, state that explicitly rather than guessing.
+"""
         elif mode == "USE_HYBRID_PRIORITIZE_DATA":
             additional_context = """
-            Prioritize the provided sources when generating responses. If necessary, supplement with your general knowledge, but avoid making assumptions or hallucinating. If the provided information conflicts with general knowledge, favor the provided data.
-            """
+Prioritize the provided sources when generating responses. If necessary, supplement with your general knowledge, but avoid making assumptions or hallucinating. If the provided information conflicts with general knowledge, favor the provided data.
+"""
         elif mode == "USE_HYBRID":
             additional_context = """
-            Use all available information, including the provided sources and your general knowledge, without prioritization. Ensure coherence and accuracy in responses, and avoid making unsupported claims.
-            """
+Use all available information, including the provided sources and your general knowledge, without prioritization. Ensure coherence and accuracy in responses, and avoid making unsupported claims.
+"""
         
         system_context = f"""{base_context}{additional_context}
         
-        Here is the provided information:
+Here is the provided information:
 
-        ### [WEBSEARCH RESULTS]
-        {websearch_result_str}
+### [WEBSEARCH RESULTS]
+{websearch_result_str}
 
-        ### [DOCUMENT SEARCH RESULTS]
-        {vectorsearch_result_str}
-        """
+### [DOCUMENT SEARCH RESULTS]
+{vectorsearch_result_str}
+"""
         
         return system_context
 
@@ -300,29 +300,29 @@ class AIPromptFlow:
         ducument_page_content = result["documentPageContent"]
 
         return f"""{prompt}
-        #### document result {result_number}
-        azure_ai_search_score: {score}
-        document_name: {document_name}
-        document_page_number: {document_page_number}
-        ducument_page_content:
-        {ducument_page_content}
-        """.strip()
+#### document result {result_number}
+azure_ai_search_score: {score}
+document_name: {document_name}
+document_page_number: {document_page_number}
+ducument_page_content:
+{ducument_page_content}
+""".strip()
 
     def _optimize_websearch_query(self) -> Iterator:
         system_context = """You are an AI assistant specializing in constructing highly effective Google search queries.
 
-        ### **Task:**
-        Your goal is to generate an optimized Google search query based on the user's message.  
+### **Task:**
+Your goal is to generate an optimized Google search query based on the user's message.  
 
-        ### **Input Source:**
-        1. **[USER MESSAGE]** – The user's original query. Use this as the basis to generate the best possible Google search query.
+### **Input Source:**
+1. **[USER MESSAGE]** – The user's original query. Use this as the basis to generate the best possible Google search query.
 
-        ### **Instructions:**
-        - Output **only** the optimized Google search query—nothing else.
-        - The query should be **short, precise, and highly relevant** to the user's intent.  
-        - Focus on structuring the query in a way that maximizes the effectiveness of Google's search algorithm.
-        - Avoid including explanations, formatting, or any additional text.
-        """
+### **Instructions:**
+- Output **only** the optimized Google search query—nothing else.
+- The query should be **short, precise, and highly relevant** to the user's intent.  
+- Focus on structuring the query in a way that maximizes the effectiveness of Google's search algorithm.
+- Avoid including explanations, formatting, or any additional text.
+"""
 
         resp: StreamResponse
         for resp in aiclient.chat.submit_stream([
@@ -349,26 +349,26 @@ class AIPromptFlow:
 
         system_context = f"""You are an AI assistant specializing in constructing highly effective Azure AI Search Index vector queries.
 
-        ### **Task:**
-        Your goal is to generate an optimized vector search query based on the user's message.
-        You may also receive web search results, which can provide additional context.
+### **Task:**
+Your goal is to generate an optimized vector search query based on the user's message.
+You may also receive web search results, which can provide additional context.
 
-        ### **Input Sources:**
-        1. **[USER MESSAGE]** – The user's original query, which you should use to construct the best possible vector search query.
-        2. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may contain relevant details.
-        - If no web search was executed, you will receive: *"no web search executed."*
-        - Use web search results *only* if they add meaningful context.
+### **Input Sources:**
+1. **[USER MESSAGE]** – The user's original query, which you should use to construct the best possible vector search query.
+2. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may contain relevant details.
+- If no web search was executed, you will receive: *"no web search executed."*
+- Use web search results *only* if they add meaningful context.
 
-        ### **Instructions:**
-        - Output **only** the optimized vector search query — nothing else.
-        - Ensure the query is concise, relevant, and effective for embedding-based search retrieval.
-        - Do **not** include explanations, formatting, or extra text.
+### **Instructions:**
+- Output **only** the optimized vector search query — nothing else.
+- Ensure the query is concise, relevant, and effective for embedding-based search retrieval.
+- Do **not** include explanations, formatting, or extra text.
 
-        Here is the provided information:
+Here is the provided information:
 
-        ### [WEBSEARCH RESULTS]
-        {websearch_result_str}
-        """
+### [WEBSEARCH RESULTS]
+{websearch_result_str}
+"""
 
         resp: StreamResponse
         for resp in aiclient.chat.submit_stream([
@@ -414,29 +414,29 @@ class AIPromptFlow:
 
         system_context = f"""You are an AI assistant specializing in **comprehensive summarization** of poorly structured text (including JSON objects as strings) based on user queries.
 
-        ### **Task:**
-        Provide a **detailed, structured, and informative** summary of the unstructured text in relation to the user's query.  
-        Ensure the summary is **accurate, well-organized, and contextually relevant**.
+### **Task:**
+Provide a **detailed, structured, and informative** summary of the unstructured text in relation to the user's query.  
+Ensure the summary is **accurate, well-organized, and contextually relevant**.
 
-        ### **Input Sources:**
-        1. **[USER MESSAGE]** – The user's original query, which serves as the basis for structuring the summary.  
-        2. **[WEBSEARCH RESULTS]** – Information retrieved from web searches, which may contain crucial details.
+### **Input Sources:**
+1. **[USER MESSAGE]** – The user's original query, which serves as the basis for structuring the summary.  
+2. **[WEBSEARCH RESULTS]** – Information retrieved from web searches, which may contain crucial details.
 
-        ### **Instructions:**
-        - **Provide a detailed summary** that includes key facts, explanations, and insights.  
-        - **Use markdown formatting** for readability, including headings, bullet points, and emphasis where necessary.  
-        - **Maintain logical flow** and structure the response with sections such as:
-        - **Overview**: Brief introduction to the topic.
-        - **Key Findings**: Important points from the web search.
-        - **Context & Explanation**: Background information and additional details.
-        - **Relevant Data**: Statistics, quotes, or structured data where applicable.
-        - **Ensure clarity and correctness**, avoiding unnecessary filler while maintaining depth.
+### **Instructions:**
+- **Provide a detailed summary** that includes key facts, explanations, and insights.  
+- **Use markdown formatting** for readability, including headings, bullet points, and emphasis where necessary.  
+- **Maintain logical flow** and structure the response with sections such as:
+- **Overview**: Brief introduction to the topic.
+- **Key Findings**: Important points from the web search.
+- **Context & Explanation**: Background information and additional details.
+- **Relevant Data**: Statistics, quotes, or structured data where applicable.
+- **Ensure clarity and correctness**, avoiding unnecessary filler while maintaining depth.
 
-        Here is the provided information:
+Here is the provided information:
 
-        ### **[WEBSEARCH RESULTS]**  
-        {websearch_result_str}
-        """
+### **[WEBSEARCH RESULTS]**  
+{websearch_result_str}
+"""
 
         summary_start = len(self.state.message)
         resp: StreamResponse
@@ -457,21 +457,21 @@ class AIPromptFlow:
     def _summarize_html_content(self, html_content: str) -> Iterator[str]:
         system_context = f"""You are an AI assistant specializing in summarizing poorly structured text based on user queries.
 
-        ### Task:
-        Summarize the following unstructured text in relation to the user message.
-        Ensure the summary is **concise, relevant, and correct**.
+### Task:
+Summarize the following unstructured text in relation to the user message.
+Ensure the summary is **concise, relevant, and correct**.
 
-        ### Input Sources:
-        - **HTML Text Content:** Extracted raw text (without HTML tags).
-        - **User Message:** The query guiding the summary.
+### Input Sources:
+- **HTML Text Content:** Extracted raw text (without HTML tags).
+- **User Message:** The query guiding the summary.
 
-        ### Instructions:
-        - **Output only the summary**—no explanations or extra text.
-        - **Do not** include formatting or additional details.
+### Instructions:
+- **Output only the summary**—no explanations or extra text.
+- **Do not** include formatting or additional details.
 
-        ### HTML Text Content:
-        {html_content}
-        """
+### HTML Text Content:
+{html_content}
+"""
 
         summary_start = len(self.state.message)
         resp: StreamResponse
