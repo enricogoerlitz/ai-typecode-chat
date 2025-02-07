@@ -12,6 +12,10 @@ OPTIMIZE_VECTOR_SEARCH_QUERY = "OPTIMIZE_VECTOR_SEARCH_QUERY"
 EXECUTE_VECTOR_SEARCH = "EXECUTE_VECTOR_SEARCH"
 EXECUTE_GENERATE_FINAL_MESSAGE = "EXECUTE_GENERATE_FINAL_MESSAGE"
 
+USE_DATA_ONLY = "USE_DATA_ONLY"
+USE_HYBRID_PRIORITIZE_DATA = "USE_HYBRID_PRIORITIZE_DATA"
+USE_HYBRID = "USE_HYBRID"
+
 
 class ChatPOSTMessagePayloadV1:
     def __init__(self, payload: dict):
@@ -48,6 +52,14 @@ class ChatPOSTMessagePayloadV1:
     @property
     def model_name(self) -> str:
         return self.model_dict.get("name")
+
+    @property
+    def chat_response_type(self) -> int:
+        return self.chat.get("responseType", USE_DATA_ONLY)
+
+    @property
+    def chat_history_count(self) -> int:
+        return self.chat.get("messageHistoryCount", 0)
 
     @property
     def message_type(self) -> str | None:
@@ -107,7 +119,7 @@ class ChatPOSTMessagePayloadV1:
                 self._add_step(steps, EXECUTE_DEEP_SEARCH)
 
             if (
-                self.vectorsearch_enabled and
+                self.websearch_optimize_web_search_results or
                 self.vectorsearch_use_websearch_results
             ):
                 self._add_step(steps, OPTIMIZE_WEB_SEARCH_RESULT)

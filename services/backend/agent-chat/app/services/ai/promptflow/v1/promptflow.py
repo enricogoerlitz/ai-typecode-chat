@@ -1,9 +1,8 @@
 # flake8: noqa
 
 import json
-import traceback
 
-from typing import Iterator
+from typing import Iterator, Literal
 
 from logger import logger
 from exc import errors
@@ -17,6 +16,7 @@ from utils.chat import (
     ChatPOSTMessagePayloadV1,
     StreamResponse,
     ChatPOSTYieldStateObject,
+    
     INITIALIZE_CONNECTION,
     OPTIMIZE_WEB_SEARCH_QUERY,
     EXECUTE_WEB_SEARCH,
@@ -24,420 +24,466 @@ from utils.chat import (
     OPTIMIZE_WEB_SEARCH_RESULT,
     OPTIMIZE_VECTOR_SEARCH_QUERY,
     EXECUTE_VECTOR_SEARCH,
-    EXECUTE_GENERATE_FINAL_MESSAGE
+    EXECUTE_GENERATE_FINAL_MESSAGE,
+    
+    USE_DATA_ONLY,
+    USE_HYBRID_PRIORITIZE_DATA,
+    USE_HYBRID
 )
 
 
-def execute(cnf: ChatPOSTMessagePayloadV1) -> Iterator[bytes]:
-    # 0. Prepare state and data
-    yield_state = ChatPOSTYieldStateObject(
-        steps=cnf.get_steps(),
-        current_step=INITIALIZE_CONNECTION,
-        status_code=200,
-        message="",
-        error=None
-    )
+class AIPromptFlow:
+    def __init__(self, chat_id: str, cnf: ChatPOSTMessagePayloadV1):
+        self._run = False
 
-    try:
-        yield yield_state.to_yield()
+        self._cnf = cnf
+        self._chat_id = chat_id
+        self._chat_history = []
+        self._model = cnf.model_name
+        self._user_message = cnf.message_content
+        self._websearch_result = {"result_string": "no results"}
+        self._vectorsearch_result = {"result_string": "no results"}
+        self._yield_state = ChatPOSTYieldStateObject(
+            steps=cnf.get_steps(),
+            current_step=INITIALIZE_CONNECTION,
+            status_code=200,
+            message="",
+            error=None
+        )
 
-        user_message = cnf.message_content
+    @property
+    def cnf(self) -> ChatPOSTMessagePayloadV1:
+        return self._cnf
 
-        websearch_result = {"result_string": "no results"}
-        vectorsearch_result = {"result_string": "no results"}
+    @property
+    def state(self) -> ChatPOSTYieldStateObject:
+        return self._yield_state
 
-        # 1. fetch chat history (count in payload)
-        # TODO: fetch chat history (count in payload)
-        chat_history = []
+    def execute(self) -> Iterator[bytes]:
+        if self._run:
+            raise Exception("A flow can be executed only once.")
 
-        # 2. execute websearch
-        if cnf.websearch_enabled:
-            for websearch_result in _exec_websearch(
-                yield_state=yield_state,
-                user_message=user_message,
-                is_deep_search=cnf.websearch_depp_search_enabled,
-                max_result_count=cnf.websearch_max_result_count,
-                optimize_query=cnf.websearch_optimize_web_search_query,
-                optimize_websearch_result=cnf.websearch_optimize_web_search_results,
-                model=cnf.model_name
-            ):
-                yield yield_state.to_yield()
+        try:
+            yield self.state.to_yield()
 
-        # 3. execute vectorsearch
-        if cnf.vectorsearch_enabled:
-            for vectorsearch_result in _exec_vector_search(
-                yield_state=yield_state,
-                user_message=user_message,
-                use_websearch_result=cnf.vectorsearch_use_websearch_results,
-                websearch_result_str=websearch_result.get("result_string", "no results"),
-                optimize_vectorsearch_query=cnf.vectorsearch_optimize_vector_search_query,
-                max_result_count=cnf.vectorsearch_max_result_count,
-                model=cnf.model_name
-            ):
-                yield yield_state.to_yield()
+            # 1. fetch chat history
+            if self.cnf.chat_history_count > 0:
+                # TODO: fetch chat history
+                self._chat_history = []
+                logger.warning("Implement fetch history")
 
-        # 4. execute final chat message
-        for _ in _exec_generate_final_response(
-            yield_state=yield_state,
-            user_message=user_message,
-            chat_history=chat_history,
-            websearch_result=websearch_result,
-            vectorsearch_result=vectorsearch_result,
-            model=cnf.model_name
-        ):
-            yield yield_state.to_yield()
+            # 2. execute websearch
+            if self.cnf.websearch_enabled:
+                for self._websearch_result in self._exec_websearch():
+                    yield self.state.to_yield()
 
-    except errors.AIClientRateLimitError as e:
-        logger.warning(e)
+            # 3. execute vectorsearch
+            if self.cnf.vectorsearch_enabled:
+                for self._vectorsearch_result in self._exec_vector_search():
+                    yield self.state.to_yield()
 
-        yield_state.error = str(e)
-        yield_state.status_code = 429
+            # 4. execute final chat message
+            for _ in self._exec_generate_final_response():
+                yield self.state.to_yield()
 
-        yield yield_state.to_yield()
+        except ValueError as e:
+            self.state.error = str(e)
+            self.state.status_code = 400
+            yield self.state.to_yield()
 
-    except (errors.RequestsException, Exception) as e:
-        logger.error(e, exc_info=True)
+        except errors.AIClientRateLimitError as e:
+            logger.warning(e)
 
-        yield_state.error = "An unexpected error has occored."
-        yield_state.status_code = 500
+            self.state.error = str(e)
+            self.state.status_code = 429
 
-        yield yield_state.to_yield()
+            yield self.state.to_yield()
 
+        except (errors.RequestsException, Exception) as e:
+            logger.error(e, exc_info=True)
 
-def _exec_websearch(
-        yield_state: ChatPOSTYieldStateObject,
-        user_message: str,
-        is_deep_search: bool,
-        max_result_count: int,
-        optimize_query: bool,
-        optimize_websearch_result: bool,
-        model: str
-) -> Iterator[dict]:
-    google_query = user_message
-    if optimize_query:
-        yield_state.next_step(OPTIMIZE_WEB_SEARCH_QUERY)
-        yield_state.append_message("\nOptimizing your question for websearch to:\n")
+            self.state.error = "An unexpected error has occored."
+            self.state.status_code = 500
+
+            yield self.state.to_yield()
+
+    def _exec_websearch(self) -> Iterator[dict]:
+        google_query = self._user_message
+        if self.cnf.websearch_optimize_web_search_query:
+            self.state.next_step(OPTIMIZE_WEB_SEARCH_QUERY)
+            self.state.append_message("\nOptimizing your question for websearch to:\n")
+            yield
+
+            for google_query in self._optimize_websearch_query():
+                yield
+
+        self.state.next_step(EXECUTE_WEB_SEARCH)
+        self.state.append_message("\nSearching the web for you...:\n")
         yield
 
-        for google_query in _optimize_websearch_query(
-            yield_state=yield_state,
-            user_message=user_message,
-            model=model
-        ):
-            yield
+        serp_obj = serp_client.search(
+            query=google_query,
+            max_results=self.cnf.websearch_max_result_count
+        )
 
-    yield_state.next_step(EXECUTE_WEB_SEARCH)
-    yield_state.append_message("\nSearching the web for you...:\n")
-    yield
+        self.state.append_message(json.dumps(serp_obj.obj, indent=2))
+        yield
 
-    serp_obj = serp_client.search(
-        query=google_query,
-        max_results=max_result_count
-    )
+        if self.cnf.websearch_depp_search_enabled:
+            for _ in self._exec_deep_websearch(serp_obj):
+                yield
 
-    yield_state.append_message(json.dumps(serp_obj.obj, indent=2))
-    yield
+        summary = None
+        summarize_websearch_results = (
+            self.cnf.websearch_optimize_web_search_results or
+            self.cnf.websearch_depp_search_enabled
+        )
+        if summarize_websearch_results:
+            for summary in self._summarize_websearch_results(serp_obj):
+                yield self.state.to_yield()
+            
+            serp_obj.set_websearch_summary(summary)
 
-    if is_deep_search:
-        for _ in _exec_deep_websearch(
-            yield_state=yield_state,
-            user_message=user_message,
-            serp_obj=serp_obj,
-            model=model
-        ):
-            yield
+        print("RESULT:", serp_obj.as_result_string())
+        yield {
+            "query_result": serp_obj,
+            "result_string": serp_obj.as_result_string()
+        }
 
-    if optimize_websearch_result:
-        # TODO: implement; kein yield, einfach batch abfrage!
-        pass
-    
-    yield {
-        "query_result": serp_obj,
-        "result_string": str(serp_obj.obj)
-    }
+    def _exec_deep_websearch(self, serp_obj: SERPResponseObject) -> Iterator:
+        self.state.next_step(EXECUTE_DEEP_SEARCH)
+        self.state.append_message("\nExecuting deep search for you:\n")
+        yield
 
+        deep_search_results = []
+        for link in serp_obj.get_links():
+            self.state.append_message(f"Processing link: {link}\n")
 
-def _exec_vector_search(
-        yield_state: ChatPOSTYieldStateObject,
-        user_message: str,
-        use_websearch_result: str,
-        websearch_result_str: str,
-        optimize_vectorsearch_query: bool,
-        max_result_count: int,
-        model: str
-) -> Iterator[dict]:
-    if use_websearch_result:
-        optimize_vectorsearch_query = True
+            html_text = fetch_url_content(link)
+            for summary in self._summarize_html_content(html_content=html_text):
+                yield
 
-    message = user_message
+            deep_search_results.append({
+                "requested_link": link,
+                "requested_link_content_summary": summary
+            })
 
-    if optimize_vectorsearch_query:
-        for message in _optimize_vectorsearch_query(
-            yield_state=yield_state,
-            user_message=user_message,
-            use_websearch_result=use_websearch_result,
+        serp_obj.set_deep_search_results(deep_search_results)
+
+    def _exec_vector_search(self) -> Iterator[dict]:
+        message = self._user_message
+        max_result_count = self.cnf.vectorsearch_max_result_count
+        optimize_vectorsearch_query = self.cnf.vectorsearch_optimize_vector_search_query
+
+        if self.cnf.vectorsearch_use_websearch_results:
+            optimize_vectorsearch_query = True
+
+        if optimize_vectorsearch_query:
+            for message in self._optimize_vectorsearch_query():
+                yield
+
+        self.state.next_step(EXECUTE_VECTOR_SEARCH)
+
+        embeddings = aiclient.embedding_model.embed(message)[0]
+        search_results = vector_search_index.search(
+            query=vector_search_index.generate_query(
+                embeddings=embeddings,
+                max_result_count=max_result_count
+            )
+        )
+
+        if len(search_results) > max_result_count:
+            search_results = search_results[:max_result_count-1]
+
+        search_results_str = "### Document search results"
+        for i, result in enumerate(search_results):
+            search_results_str = self._add_vectorsearch_result_string(
+                prompt=search_results_str,
+                result=result,
+                result_number=i
+            )
+
+        yield {
+            "query_result": search_results,
+            "result_string": search_results_str
+        }
+
+    def _exec_generate_final_response(self) -> Iterator[ChatPOSTYieldStateObject]:
+        self.state.next_step(EXECUTE_GENERATE_FINAL_MESSAGE)
+        self.state.append_message("\n\n\n### Final result:\n")
+
+        websearch_result_str = self._websearch_result.get("result_string", "no results")
+        vectorsearch_result_str = self._vectorsearch_result.get("result_string", "")
+
+        system_context = self._generate_final_response_system_context(
+            mode=self.cnf.chat_response_type,
             websearch_result_str=websearch_result_str,
-            model=model
-        ):
-            yield
-
-    yield_state.next_step(EXECUTE_VECTOR_SEARCH)
-
-    embeddings = aiclient.embedding_model.embed(message)[0]
-
-    search_results = vector_search_index.search(
-        query=vector_search_index.generate_query(
-            embeddings=embeddings,
-            max_result_count=max_result_count
-        )
-    )
-
-    if len(search_results) > max_result_count:
-        search_results = search_results[:max_result_count-1]
-
-    search_results_str = "### Document search results"
-    for i, result in enumerate(search_results):
-        search_results_str = _add_vectorsearch_result_string(
-            prompt=search_results_str,
-            result=result,
-            result_number=i
+            vectorsearch_result_str=vectorsearch_result_str
         )
 
-    yield {
-        "query_result": search_results,
-        "result_string": search_results_str
-    }
+        # 4. Generate final response
+        resp: StreamResponse
+        for resp in aiclient.chat.submit_stream([
+            {
+                "role": "system",
+                "content": [{
+                    "type": "text",
+                    "text": system_context
+                }]
+            },
+            {
+                "role": "user",
+                "content": [{
+                    "type": "text",
+                    "text": self._user_message
+                }]
+            },
+        ], model=self._model, current_message=self.state.message):
+            new_message = resp.data["message"]
+            if self.state.message == new_message:
+                continue
 
-
-def _exec_deep_websearch(
-        yield_state: ChatPOSTYieldStateObject,
-        serp_obj: SERPResponseObject,
-        user_message: str,
-        model: str
-) -> Iterator:
-    yield_state.next_step(EXECUTE_DEEP_SEARCH)
-    yield_state.append_message("\nExecuting deep search for you:\n")
-    yield
-
-    deep_search_results = []
-    for link in serp_obj.get_links():
-        yield_state.append_message(f"Processing link: {link}\n")
-
-        html_text = fetch_url_content(link)
-        for summary in _summarize_html_content(
-            yield_state=yield_state,
-            user_message=user_message,
-            html_content=html_text,
-            model=model
-        ):
+            self.state.set_message(new_message)
             yield
 
-        deep_search_results.append({
-            "requested_link": link,
-            "requested_link_content_summary": summary
-        })
-    
-    serp_obj.set_deep_search_results(deep_search_results)
+    def _generate_final_response_system_context(
+            self,
+            mode: str,
+            websearch_result_str,
+            vectorsearch_result_str
+    ) -> str:
+        if mode not in [USE_DATA_ONLY, USE_HYBRID_PRIORITIZE_DATA, USE_HYBRID]:
+            raise ValueError("Invalid mode. Choose from 'USE_DATA_ONLY', 'USE_HYBRID_PRIORITIZE_DATA', or 'USE_HYBRID'.")
+        
+        base_context = """You are an AI assistant specializing in retrieving and synthesizing information from multiple sources to provide accurate and relevant answers.
+        You will receive structured data from the following sources:
 
+        1. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may include summarized content or deeper details from specific websites.
+        2. **[DOCUMENT SEARCH RESULTS]** – Information retrieved from relevant documents, selected to provide the most useful insights for the user's query.
+        """
+        
+        if mode == "USE_DATA_ONLY":
+            additional_context = """
+            Use ONLY the provided sources to generate well-structured, concise, and helpful responses. Do NOT rely on prior knowledge. If no relevant information is found, state that explicitly rather than guessing.
+            """
+        elif mode == "USE_HYBRID_PRIORITIZE_DATA":
+            additional_context = """
+            Prioritize the provided sources when generating responses. If necessary, supplement with your general knowledge, but avoid making assumptions or hallucinating. If the provided information conflicts with general knowledge, favor the provided data.
+            """
+        elif mode == "USE_HYBRID":
+            additional_context = """
+            Use all available information, including the provided sources and your general knowledge, without prioritization. Ensure coherence and accuracy in responses, and avoid making unsupported claims.
+            """
+        
+        system_context = f"""{base_context}{additional_context}
+        
+        Here is the provided information:
 
-def _exec_generate_final_response(
-        yield_state: ChatPOSTYieldStateObject,
-        user_message: str,
-        chat_history: list[dict],
-        websearch_result: dict,
-        vectorsearch_result: dict,
-        model: str
-) -> Iterator[ChatPOSTYieldStateObject]:
-    yield_state.next_step(EXECUTE_GENERATE_FINAL_MESSAGE)
-    yield_state.append_message("\n\n\n### Final result:\n")
+        ### [WEBSEARCH RESULTS]
+        {websearch_result_str}
 
-    websearch_result_str = websearch_result.get("result_string", "no results")
-    vectorsearch_result_str = vectorsearch_result.get("result_string", "")
+        ### [DOCUMENT SEARCH RESULTS]
+        {vectorsearch_result_str}
+        """
+        
+        return system_context
 
-    system_context = f"""You are an AI assistant specializing in retrieving and synthesizing information from multiple sources to provide accurate and relevant answers.  
-You will receive structured data from the following sources:  
+    def _add_vectorsearch_result_string(
+            self,
+            prompt: str,
+            result: dict,
+            result_number: int
+    ) -> str:
+        score = result.get("@search.score", "not given")
+        document_name = result["documentName"]
+        document_page_number = result["documentPageNumber"]
+        ducument_page_content = result["documentPageContent"]
 
-1. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may include summarized content or deeper details from specific websites.  
-2. **[DOCUMENT SEARCH RESULTS]** – Information retrieved from relevant documents, selected to provide the most useful insights for the user's query.  
+        return f"""{prompt}
+        #### document result {result_number}
+        azure_ai_search_score: {score}
+        document_name: {document_name}
+        document_page_number: {document_page_number}
+        ducument_page_content:
+        {ducument_page_content}
+        """.strip()
 
-Use these sources to generate well-structured, concise, and helpful responses. If information from both sources is available, prioritize accuracy and coherence when combining them. If no relevant information is found, state that explicitly rather than guessing.  
+    def _optimize_websearch_query(self) -> Iterator:
+        system_context = """You are an AI assistant specializing in constructing highly effective Google search queries.
 
-Here is the provided information:  
+        ### **Task:**
+        Your goal is to generate an optimized Google search query based on the user's message.  
 
-### [WEBSEARCH RESULTS]  
-{websearch_result_str}  
+        ### **Input Source:**
+        1. **[USER MESSAGE]** – The user's original query. Use this as the basis to generate the best possible Google search query.
 
-### [DOCUMENT SEARCH RESULTS]  
-{vectorsearch_result_str}  
-"""
+        ### **Instructions:**
+        - Output **only** the optimized Google search query—nothing else.
+        - The query should be **short, precise, and highly relevant** to the user's intent.  
+        - Focus on structuring the query in a way that maximizes the effectiveness of Google's search algorithm.
+        - Avoid including explanations, formatting, or any additional text.
+        """
 
-    # 4. Generate final response
-    resp: StreamResponse
-    for resp in aiclient.chat.submit_stream([
-        {
-            "role": "system",
-            "content": [{
-                "type": "text",
-                "text": system_context
-            }]
-        },
-        {
-            "role": "user",
-            "content": [{
-                "type": "text",
-                "text": user_message
-            }]
-        },
-    ], model=model, current_message=yield_state.message):
-        new_message = resp.data["message"]
-        if yield_state.message == new_message:
-            continue
+        resp: StreamResponse
+        for resp in aiclient.chat.submit_stream([
+            {"role": "system", "content": system_context},
+            {"role": "user", "content": self._user_message},
+        ], model=self._model, current_message=self.state.message):
+            new_message = resp.data["message"]
+            if self.state.message == new_message:
+                continue
 
-        yield_state.set_message(new_message)
+            self.state.set_message(new_message)
+            yield
+
+        yield resp.data["message"]
+
+    def _optimize_vectorsearch_query(self) -> Iterator[str]:
+        self.state.next_step(OPTIMIZE_VECTOR_SEARCH_QUERY)
+        self.state.append_message("\n\nWe are optimizing your message for besser vector search:\n")
         yield
 
+        websearch_result_str = self._websearch_result.get("result_string", "no results")
+        if not self.cnf.vectorsearch_use_websearch_results:
+            websearch_result_str = "no web search executed."
 
-def _add_vectorsearch_result_string(
-        prompt: str,
-        result: dict,
-        result_number: int
-) -> str:
-    score = result["@search.score"]
-    document_name = result["documentName"]
-    document_page_number = result["documentPageNumber"]
-    ducument_page_content = result["documentPageContent"]
+        system_context = f"""You are an AI assistant specializing in constructing highly effective Azure AI Search Index vector queries.
 
-    return f"""{prompt}
-#### document result {result_number}
-azure_ai_search_score: {score}
-document_name: {document_name}
-document_page_number: {document_page_number}
-ducument_page_content:
-{ducument_page_content}
-""".strip()
+        ### **Task:**
+        Your goal is to generate an optimized vector search query based on the user's message.
+        You may also receive web search results, which can provide additional context.
 
+        ### **Input Sources:**
+        1. **[USER MESSAGE]** – The user's original query, which you should use to construct the best possible vector search query.
+        2. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may contain relevant details.
+        - If no web search was executed, you will receive: *"no web search executed."*
+        - Use web search results *only* if they add meaningful context.
 
-def _optimize_websearch_query(
-        yield_state: ChatPOSTYieldStateObject,
-        user_message: str,
-        model: str
-) -> Iterator:
+        ### **Instructions:**
+        - Output **only** the optimized vector search query — nothing else.
+        - Ensure the query is concise, relevant, and effective for embedding-based search retrieval.
+        - Do **not** include explanations, formatting, or extra text.
 
-    system_context = f"""You are an AI assistant specializing in constructing highly effective Google search queries.  
+        Here is the provided information:
 
-### **Task:**  
-Your goal is to generate an optimized Google search query based on the user's message.  
+        ### [WEBSEARCH RESULTS]
+        {websearch_result_str}
+        """
 
-### **Input Source:**  
-1. **[USER MESSAGE]** – The user's original query. Use this as the basis to generate the best possible Google search query.  
+        resp: StreamResponse
+        for resp in aiclient.chat.submit_stream([
+            {"role": "system", "content": system_context},
+            {"role": "user", "content": self._user_message},
+        ], model=self._model, current_message=self.state.message):
+            new_message = resp.data["message"]
+            if self.state.message == new_message:
+                continue
 
-### **Instructions:**  
-- Output **only** the optimized Google search query—nothing else.  
-- The query should be **short, precise, and highly relevant** to the user’s intent.  
-- Focus on structuring the query in a way that maximizes the effectiveness of Google’s search algorithm.  
-- Avoid including explanations, formatting, or any additional text.  
-"""
+            self.state.set_message(new_message)
+            yield
 
-    resp: StreamResponse
-    for resp in aiclient.chat.submit_stream([
-        {"role": "system", "content": system_context},
-        {"role": "user", "content": user_message},
-    ], model=model, current_message=yield_state.message):
-        new_message = resp.data["message"]
-        if yield_state.message == new_message:
-            continue
+        yield resp.data["message"]
 
-        yield_state.set_message(new_message)
+    def _summarize_websearch_results(self, serp_obj: SERPResponseObject) -> Iterator[str]:
+        self.state.next_step(OPTIMIZE_WEB_SEARCH_RESULT)
+        self.state.append_message("\n### Optimizing the web search results\n")
         yield
 
-    yield resp.data["message"]
+        websearch_result_str = str(serp_obj.obj)
 
-def _optimize_vectorsearch_query(
-        yield_state: ChatPOSTYieldStateObject,
-        user_message: str,
-        use_websearch_result: bool,
-        websearch_result_str: str,
-        model: str
-) -> Iterator[str]:
-    yield_state.next_step(OPTIMIZE_VECTOR_SEARCH_QUERY)
-    yield_state.append_message("\n\nWe are optimizing your message for besser vector search:\n")
-    yield
+        # system_context = f"""You are an AI assistant specializing in summarizing poorly structured text (inkl. JSON-Objects as string) based on user queries.
 
-    if not use_websearch_result:
-        websearch_result_str = "no web search executed."
+        # ### **Task:**
+        # Summarize the following unstructured text in relation to the user message.
+        # Ensure the summary is **concise, relevant, and correct**.
 
-    system_context = f"""You are an AI assistant specializing in constructing highly effective Azure AI Search Index vector queries.  
-
-### **Task:**  
-Your goal is to generate an optimized vector search query based on the user's message.  
-You may also receive web search results, which can provide additional context.  
-
-### **Input Sources:**  
-1. **[USER MESSAGE]** – The user's original query, which you should use to construct the best possible vector search query.  
-2. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may contain relevant details.  
-   - If no web search was executed, you will receive: *"no web search executed."*  
-   - Use web search results *only* if they add meaningful context.  
-
-### **Instructions:**  
-- Output **only** the optimized vector search query — nothing else.  
-- Ensure the query is concise, relevant, and effective for embedding-based search retrieval.  
-- Do **not** include explanations, formatting, or extra text.  
-
-Here is the provided information:  
-
-### [WEBSEARCH RESULTS]  
-{websearch_result_str}  
-"""
-
-    resp: StreamResponse
-    for resp in aiclient.chat.submit_stream([
-        {"role": "system", "content": system_context},
-        {"role": "user", "content": user_message},
-    ], model=model, current_message=yield_state.message):
-        new_message = resp.data["message"]
-        if yield_state.message == new_message:
-            continue
-
-        yield_state.set_message(new_message)
-        yield
-
-    yield resp.data["message"]
+        # ### **Input Sources:**
+        # 1. **[USER MESSAGE]** – The user's original query, which you should use to construct the best possible summary of the data.
+        # 2. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may contain relevant details.
 
 
-def _summarize_html_content(
-        yield_state: ChatPOSTYieldStateObject,
-        user_message: str,
-        html_content: str,
-        model: str
-) -> Iterator[str]:
-    system_context = f"""You are an AI assistant specializing in summarizing poorly structured text based on user queries.
+        # ### **Instructions:**
+        # - Ensure the summary is concise and relevant.
+        # - Do include formatting (markdown).
 
-### Task:  
-Summarize the following unstructured text in relation to the user message.  
-Ensure the summary is **concise, relevant, and correct**.  
+        # Here is the provided information:
 
-### Input Sources:  
-- **HTML Text Content:** Extracted raw text (without HTML tags).  
-- **User Message:** The query guiding the summary.  
+        # ### [WEBSEARCH RESULTS]
+        # {websearch_result_str}
+        # """
 
-### Instructions:  
-- **Output only the summary**—no explanations or extra text.  
-- **Do not** include formatting or additional details.  
+        system_context = f"""You are an AI assistant specializing in **comprehensive summarization** of poorly structured text (including JSON objects as strings) based on user queries.
 
-### HTML Text Content:
-{html_content}
-"""
+        ### **Task:**
+        Provide a **detailed, structured, and informative** summary of the unstructured text in relation to the user's query.  
+        Ensure the summary is **accurate, well-organized, and contextually relevant**.
 
-    resp: StreamResponse
-    for resp in aiclient.chat.submit_stream([
-        {"role": "system", "content": system_context},
-        {"role": "user", "content": user_message},
-    ], model=model, current_message=yield_state.message):
-        new_message = resp.data["message"]
-        if yield_state.message == new_message:
-            continue
+        ### **Input Sources:**
+        1. **[USER MESSAGE]** – The user's original query, which serves as the basis for structuring the summary.  
+        2. **[WEBSEARCH RESULTS]** – Information retrieved from web searches, which may contain crucial details.
 
-        yield_state.set_message(new_message)
-        yield
+        ### **Instructions:**
+        - **Provide a detailed summary** that includes key facts, explanations, and insights.  
+        - **Use markdown formatting** for readability, including headings, bullet points, and emphasis where necessary.  
+        - **Maintain logical flow** and structure the response with sections such as:
+        - **Overview**: Brief introduction to the topic.
+        - **Key Findings**: Important points from the web search.
+        - **Context & Explanation**: Background information and additional details.
+        - **Relevant Data**: Statistics, quotes, or structured data where applicable.
+        - **Ensure clarity and correctness**, avoiding unnecessary filler while maintaining depth.
 
-    yield resp.data["message"]
+        Here is the provided information:
+
+        ### **[WEBSEARCH RESULTS]**  
+        {websearch_result_str}
+        """
+
+        summary_start = len(self.state.message)
+        resp: StreamResponse
+        for resp in aiclient.chat.submit_stream([
+            {"role": "system", "content": system_context},
+            {"role": "user", "content": self._user_message},
+        ], model=self._model, current_message=self.state.message):
+            new_message = resp.data["message"]
+            if self.state.message == new_message:
+                continue
+
+            self.state.set_message(new_message)
+            yield
+
+        summary = resp.data["message"][summary_start:]
+        yield summary
+
+    def _summarize_html_content(self, html_content: str) -> Iterator[str]:
+        system_context = f"""You are an AI assistant specializing in summarizing poorly structured text based on user queries.
+
+        ### Task:
+        Summarize the following unstructured text in relation to the user message.
+        Ensure the summary is **concise, relevant, and correct**.
+
+        ### Input Sources:
+        - **HTML Text Content:** Extracted raw text (without HTML tags).
+        - **User Message:** The query guiding the summary.
+
+        ### Instructions:
+        - **Output only the summary**—no explanations or extra text.
+        - **Do not** include formatting or additional details.
+
+        ### HTML Text Content:
+        {html_content}
+        """
+
+        summary_start = len(self.state.message)
+        resp: StreamResponse
+        for resp in aiclient.chat.submit_stream([
+            {"role": "system", "content": system_context},
+            {"role": "user", "content": self._user_message},
+        ], model=self._model, current_message=self.state.message):
+            new_message = resp.data["message"]
+            if self.state.message == new_message:
+                continue
+
+            self.state.set_message(new_message)
+            yield
+
+        yield resp.data["message"][summary_start:]

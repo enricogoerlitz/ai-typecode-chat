@@ -93,6 +93,11 @@ class SERPResponseObject:
     def set_deep_search_results(self, results: list[dict]) -> None:
         self.obj["deep_search_results"] = results
 
+    def set_websearch_summary(self, summary: str) -> None:
+        self.obj["websearch_summary"] = summary
+
+    def as_result_string(self) -> str:
+        return str(self.obj) if "websearch_summary" not in self.obj else self.obj["websearch_summary"]
 
 class WebSearchSERPClient:
     def __init__(

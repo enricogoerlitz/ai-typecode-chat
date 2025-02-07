@@ -1,0 +1,39 @@
+name: emtec-ai-device-type-chat
+
+services:
+  weaviate:
+    image: semitechnologies/weaviate:latest
+    container_name: weaviate
+    environment:
+      # Set environment variables for Weaviate configuration
+      - QUERY_DEFAULTS_LIMIT=20
+      - CLUSTER_HOSTNAME=weaviate
+      - AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED="true"
+      - PERSISTENCE_DATA_PATH=/var/lib/weaviate
+      - VECTOR_INDEX_TYPE=hnsw
+      - DEFAULT_VECTORIZER_MODULE=none # Set to "text2vec-contextionary" or another vectorizer if needed
+    ports:
+      - "8000:8080"  # Expose the Weaviate API on port 8080
+    volumes:
+      - weaviate_data:/Users/enricogoerlitz/volumes/emtec_ai_device_type_chat/vectordb
+    networks:
+      - emtec_ai_device_type_chat_network
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/Users/enricogoerlitz/volumes/emtec_ai_device_type_chat/mongodb
+    networks:
+      - emtec_ai_device_type_chat_network
+
+networks:
+  emtec_ai_device_type_chat_network:
+
+volumes:
+  mongodb_data:
+  weaviate_data:
+    driver: local
