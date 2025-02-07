@@ -1,5 +1,7 @@
 resources/data/imt
+services/backend/agent-chat/local-embedding/documents/*.imt.txt
 
+.vscode
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -174,3 +176,4 @@ override.tf.json
 .terraform/
 .terraform.lock.hcl
 .vscode/PythonImportHelper-v2-Completion.json
+PythonImportHelper-v2-Completion.json

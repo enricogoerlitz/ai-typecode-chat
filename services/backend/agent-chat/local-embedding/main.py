@@ -6,12 +6,13 @@ load_dotenv()
 
 
 from dummy import import_dummy  # noqa
-from imt import import_imt  # noqs
+from imt import import_imt, transform_imt  # noqs
 
 
 def main() -> None:
     # import_dummy()
-    import_imt()
+    # import_imt()
+    transform_imt()
     print("main")
 
 

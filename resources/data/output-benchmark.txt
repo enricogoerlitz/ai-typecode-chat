@@ -1,0 +1,741 @@
+HITACHI cere
+29 x . EUB-6000
+
+La ie ™ Ultrasound Scanner :
+
+~Ln
+—_ el 7
+
+Innovating the Digital Ultrasound Technology,
+
+HITACHI
+RF Hayashi Tey
+
+From the transmission of
+ultrasound beams to image
+processing and post
+processing, all functions are
+_ fully digitized and
+_ computerized. As a result,
+image quality and diagnostic
+_ functions have been
+improved and maximized. »
+Hitachi continues to be the
+innovator in ultrasound
+technology.
+
+Digital Beam Forming
+
+Improving ultrasound beam quality through the use of digital beam forming techniques.
+
+@Quadra Beam
+Receiving
+
+Quadra beam receiving technology allows
+the system to receive acoustic data from
+the patient at a rate four times faster. The
+clinician greatly benefits from improved
+images with detail collected using this high
+line density processing system. Color flow
+frame rates are also optimized for
+maximum temporal resolution.
+
+@ Dynamic Tissue Harmonic
+Imaging (dTHI)
+
+When the ultrasound passes through
+
+the body, harmonic distortion increases
+
+by varying degrees.
+
+By extracting higher harmonic echo,
+
+fine and high contrast image can be
+
+depicted even at greater depths.
+
+@Two Dimensional (2D)
+
+Beam Apodisation
+Expanding acoustic aperture wider, the
+transmitting beam can be converged
+narrower, but side lobes are increased
+relatively. However the grating side
+lobes can be reduced by emitting the
+beam in gibhous profile.
+
+Transmission wave in rectangular form
+gives high emission power but it is
+distorted to fusiform and effective
+acoustic energy is reduced drastically.
+
+Previously applying the fusiform profile
+to the transmission wave, such
+distortion can be  preventively
+eliminated.
+
+These two dimensional, acoustic wise
+and time wise apodisation bring on
+superior image quality.
+
+2D apodisation
+
+@ Dot Focusing
+Technology
+The number of focus points is increased
+up to forming a dotted line through out
+the entire field of scan line, by
+microfocusing technology of continuous
+
+aperture optimization.
+
+Together with eight setting electronic
+focuses on transmission, sharp image is
+available.
+
+CONTINUOUS FOCUSING
+
+S\N
+PERFECT BEAM PROFILE BY DFT
+
+HEM Evssooo
+
+Convenience redefined
+
+@Rapid change-over time
+
+Typically, one of the weak links in digital
+ultrasound systems has been the delay
+"change-over time" when selecting from
+one transducer or application to another.
+With the EUB-6000 there is virtually no
+delay.
+
+We never keep you waiting.
+
+@Real-time biplane imaging
+
+The real-time biplane imaging function
+is the unique technique available only
+from Hitach, which offers simultaneous
+imaging of axial, and transaxial planes.
+By adopting the real-time biplane
+technique to the esophageal probe,
+simultaneous imaging of axial and
+transaxial planes of the heart becomes
+possible from the esophagus.
+
+EB cusscoo
+
+@ Optimal orientation
+
+Top/bottom, right/left inversion and
+90° rotation of B-image gives clinicians
+the opportunity to observe anatomical
+parts in preferred orientations.
+
+B/M and B/D mode.
+Top(B)y/bottom(MorD) or right(B)/left(M
+orD) display is selectable after being
+frozen.
+
+@B-color imaging
+Enhances observation and detection by
+highlighting in subtle shades and hues.
+
+@Maximum Field of View(FOV)
+Hitachi's 200°sector endfire probe
+provides the clinician with the widest
+field of view available allowing the
+clinician to image even the smallest
+details.
+
+—- Scan angle 200 degreas
+
+-_
+
+>» fs
+
+Scan angle 200 degrees
+
+@Zoom Flexibility
+
+Due to Quadra beam processing, the
+EUB-6000 provides the clinician the
+ability to zoom even after freezing the
+image.
+
+Optimal Color Flow Imaging...
+
+Color Flow Mapping(CFM)
+
+Provides real-time observation in color of the dynamic state
+and characteristics (flow direction, velocity, velocity variance,
+etc.) of the blood flow in the abdominal, vascular, and other
+regions.
+
+vELOS Bila nei” BA bad Barwa
+
+Color hold mode display
+
+Large cine memory capacity enables multilayered storage of
+selected color flow images for later retrieval and review.
+Depicts all vessels, even peripherals, without motion artifact
+disturbance.
+
+Color Flow Angiography(CFA)
+
+Obtains image from the reflection intensity of blood flow
+signals, and displays it overlapped on a B-Mode image.
+Effective for detecting very slow blood flows, such as that in
+small vessels. Since the image is independent from blood flow
+velocity, all flows from very slow to high speed are displayed
+without discrimination.
+
+Peak hold mode display
+
+Color flow images can be accumulated continuously for real-
+time observation. Time spans are selectable -- 1 sec., 2 secs., 4
+secs., or infinite -- and at the end of the given span, a fresh
+sequence of images is provided. Extremely useful, particularly
+for complicated screening exams.
+
+Directional Color Flow Angiography(Directional CFA)
+
+The CFA signals are displayed in two colors. The coloring aids
+in distinguishing directional flow.
+
+Oblique scan using linear probe
+
+High-quality color Doppler images of oblique superficial blood
+vessels can be acquired by oblique-scanning, while maintaining
+the basic function of providing high-resolution B-mode imaging.
+
+HG cussooo
+The EUB-6000 provides several standard calculation packages.
+All of these packages can be customized by setting desired parameters
+
+and applying basic measurement tools.
+Clinicians are offered a new level of flexibility in obtaining specific measurements and reports.
+
+@ Full range of basic
+measurements
+Distance, circumference, area, volume,
+angle, and other basic measurements
+are all provided and easily acquired.
+Volume measurement can be obtained
+simply by using the area-length, ellipse,
+or biplane methods.
+
+@ Obstetrics measurements
+
+A sophisticated obstetrical,
+
+report function displays requisite
+measurements data, fetal weight, fetal
+and maternal anatomical status, ratios,
+and clinical history. Standard growth
+curves and previous exam data are
+presented in graphics. All of the
+information can be called up with a few
+simple key strokes, Tables and
+equations have been incorporated for
+easy set-up, and are programmable
+according to the user's specific needs.
+
+Some ane |
+
+0g ne
+
+tears
+eh an
+
+a7 em rece woe Hs orsen mo if
+em UnderEn oP
+
+2ar
+HOO mm Zemtdsvad TOON] HADES © -teaaD | HADEE
+
+HG cvscoon
+
+@dHip-joint dislocation
+
+angle measurement
+A highly useful function for measuring the
+angle of hip-joint dislocation in a newborn
+infant. The degree of severity is determined
+by the angles of bony roof and cartilage roof.
+Just input the joints to be measured and the
+function automatically calculates the angles “a”
+and “3”.
+
+@ Urological measurements
+
+Estimates hypertrophic volume and antigen
+concentration from the volume
+measurements of the bladder, prostate, and
+other urologically-related regions.
+
+Convenient urological measurement report
+and edit functions are also provided.
+Programmable to suit the user's specific
+requirements.
+
+@Cardiac measurements
+
+Five types of cardiac measurements in M-
+Mode are available: mitral valve (MV), aortic
+valve (AO), left ventricle (LV), pulmonary
+valve (PV), and tricuspid valve (TV). The
+report function displays all of these
+measurements on a single page for easy
+review.
+
+@aAuto-tracing
+
+Just set the start and end points, and
+this function automatically traces the
+Doppler waveform's envelope. An
+essential function in view of the
+repetitive nature of Doppler
+examinations.
+
+&
+@Color Doppler flow rate
+measurement
+This innovative feature permits the flow
+rate (typically obtained from pulse
+Doppler waveforms) to be measured
+directly from a color Doppler image.
+Simply setting the caliper in the colored
+area and the angle bar in the flow
+direction provides prompt measurement
+and display of the average flow rate.
+
+@ Patient reports
+
+This feature obtains the mean value by
+recording repeated measurements, thus
+minimizing the chance of measurement.
+errors. Measurement data is assembled
+in the form of a patient report, which
+can be reviewed on-screen or output as
+hard copy.
+
+. busi
+‘Bay cet rege | SNe Pasig tmiurm EGS rn cir?
+
+Pakeeeip. capdateaat Feit <i sbusaa rane
+Aone | Hence sane
+
+Superior Image Management
+
+Digital information and data working for the clinician.
+
+@Practical use of computer media
+
+Due to Hitachi's "Digital" format, various computer media can
+be utilized. MO, FDD and HDD provided as built-in storage
+media.
+
+Measurement report and graphs can be printed on standard
+computer printers.
+
+Image transfer to other external computer networks is
+available through DICOM servers.
+
+BUILT-IN MEDIA
+
+@ Independent storage of
+
+B and M/D mode in Cine Memory
+Large cine memory allows the clinician to store the images of
+B/M/D mode separately. Therefore, B mode and M/D mode
+images can be reviewed independently. Previously stored
+images, precise inspection and play back measurement is
+
+a) available.
+B mode
+-—_———_
+CONtinay
+"Econ
+
+eons AO VN
+
+WWW! WW
+
+@Management of images
+
+The image data recorded in digital format can be managed
+freely and without restriction using standard computer
+technique.
+
+Merging, sorting and comparing images
+
+Images from various memory media are gathered and merged.
+For systematic and efficient management, the gathered images
+are stored and managed by either ID or patient name.
+
+6 BEE «
+
+Comparison Review
+
+Be ne
+Beas HDD Save data into the
+
+Retrieving images
+Using standard PC based techniques, clinician can easily
+search and retrieve images from previous patient studies.
+
+Quick view allows clinician to obtain easy comparisons.
+
+Multi display of 4, 9 or 16 images is useful for comparison
+of progress.
+
+Log information allows the clinician to navigate and select
+which patient information.
+
+1a
+
+MM cvscoco
+
+Full selection of high density probes
+Whether a routine exam or a highly specialized one, Hitachi has the probe for your application
+
+@High sensitivity probes
+
+By adopting new probe technology, Hitachi
+has eliminated acoustic noise.
+
+By expanding the frequency band, sharper
+and clearer images are depicted.
+
+&
+
+@ Transvaginal probes
+
+Ultrasound scans have become an
+increasingly vital tool in obstetric
+applications — early diagnosis of pregnancy,
+placenta previa, ovarian progress in
+infertility cases, and so on. In short, a wide
+variety of transvaginal probes is needed.
+The EUP series offers just that. There's the
+standard EUP-V53W for biopsies and ovum
+collection; the EUP-F531 for palpation-type
+procedures;and the EUP-CC331, which
+provides simultaneous display of both axial
+and transaxial images.
+
+HEM cussooo
+
+@Transrectal probes
+
+A wide selection is available to meet the
+specific application. The EUP-CC331
+provides real-time biplane imaging; the
+EUP-U533, when combined with linear or
+convex probes, permits of observation of
+positional relations, and the 200°radial scan
+type EUP-R53W is useful for screening
+exam of cancer on the rectal wall, etc.
+
+@Wide-view, high-frequency
+probe
+
+A high-frequency linear probe with an
+attached water bag designed for
+examinations of the mammary gland,
+thyroid, or wide body surface regions.
+Water volume can be readily adjusted by
+syringe for optimal imaging.
+
+@High frequency probes for
+superficial regions
+
+For clear depiction of superficial blood
+vessels, the EUP series offers a full range
+of high-frequency probes, including
+compact linear probes and Hitachi's unique
+fingertip probes. A great way to expand
+color Doppler applications as well.
+
+@Biopsy probes
+
+Dedicated biopsy probe is provided in
+convex type.
+
+For superficial regions, an oblique stand-off
+attachment with a biopsy aperture is
+available for use with high frequency linear
+probe EUP-L53S. Biopsy attachments are
+also available for use with general-purpose
+convex probes.
+
+@ Intraoperative probes
+
+The EUP series also offers a selection of
+probes for use during surgical procedures.
+The T-shaped linear probe is designed for
+viewing the gallbladder and liver; and the
+7.5 MHz 40R laparoscopic probe for
+minimizing surgical trauma.
+
+@Biplane observable of heart by
+esophageal probe
+
+By adopting the real-time biplane
+
+technique to the esophageal probe,
+
+simultaneous imaging of axial and
+
+transaxial planes of the heart becomes
+
+possible from the esophagus.
+
+@Multi-plane esophageal probe
+For omnidiretctional observation of heart
+through esophagus, 5.0MHz, 14mm dia.
+probe is available.Since the sector head of
+probe can be turned + 100° from axial plane,
+defect of septum wall between ventricle
+and atrium,myocardial motion,and etc.can
+be ovserved
+
+@Probe for use with endoscope
+The 7.5MHz, 10R convex probe can be
+docked with an endoscope to provide a
+wide viewing angle. The face of the probe
+and forceps movement can be monitored
+via the endoscope, enabling more precise
+scanning and manipulation. Ideal for
+imaging the gastric wall, pancreatic cauda,
+or other regions that are difficult to scan
+through the abdomen.
+
+FEB cuscooo
+EUB-
+
+Composition of main unit SPECIFICATIONS
+EUB-6000 main unit Scan method : Electronic sector, convex and linear scanning
+Accessories Probe frequency =: 2.) ~13MHz
+
+Beam former : Digital beam forming
+
+(acoustic-coupling jelly, dust cover, power cord, and allen wrench) 256 process channel with quadra beam processing
+
+System dynamic range : over 150dB
+
+Display mode
+B mode : B mode, B/B mode
+M. mode :M mode, B/M mode
+Dimensions of EUB-6000 Doppler mode : PW mode, B/PW mode, M/PW mode, B/M/PW made
+
+CW mode, B/CW mode
+
+CFM mode : CFM-B mode CFM-B/CEFM-B mode
+CFMGM mode, CFM-B/CFM-M mode
+CFM-B/PW mode, CEM-M/PW mode
+CFM-B/CFM-M/PW mode )
+CFM-B/CW mode
+
+B mode
+
+Scan angle(convex): 200° 120° 100°, 90° 70° 56° and 40°
+(sector) : 90° 75° 60° 45° 30" and 15°
+| Display depth :2em ~24em (depending on probe frequency)
+Frame rate
+(EUP-C314G) : 30 frames/sec (at 75°/17em display)
+(EUP-S31T) : 54 frames/sec (at 90°/17cm display)
+Max. 349 frames/sec (at 15’/Icm display)
+Focusing system — : § steps electronic focus on transmission
+Dynamic focus on reception
+Orientation : Top-bottom and right-left inversible
+Image rotation : 0° 90° 180° 270°
+Forward-reverse inversible in Doppler mode
+Memory recording; Cine-memory mode : 267 frames (with display in 90°sector)
+
+Multimemory mode : Max. 100 images
+M-mode
+Display method : Scrolling
+Sweep rate : 125, 25, 5.0 and 10 sec/screen
+Memory recording : Long-M mode : 80sec
+D-mode
+{ CW Doppler : Reference frequency : 20MHz, 25MHz and 35MHz
+
+Max. detection flow speed : 144m/sec
+
+Wall filter ; 50Hz ~1600Hz =
+PW Doppler : Reference frequency : 20MHz~75MHz }
+
+Probe frequency : 25MH2~10MHz a
+
+Repetition frequency : 1kHz~20kHz
+
+Max. detection flow speed : 72m/sec
+
+Wall filter : 50Hz~1600Hz
+
+CFM-mode
+Doppler function — ; Reference frequency : 20MHz~7.5MHz
+Repetition frequency :120Hz~20kHz
+| CFM-B mode : View area : Color box/sector display selectable
+| M-mode : Display method : Scrolling
+
+Sweep rate : Selectable in 4 steps
+CFM display method : Velocity/velocity variance display
+
+Velocity display
+
+Echo intensity display
+
+Velocity variance display
+
+Color flow angiography (CFA) display
+
+= Directional CFA display
+= Measurement function
+‘ B-mode : Distance, area, circumferential length, volume, angle, cardiac
+functions, obstetrics, urology, histogram
+M-mode : Depth difference, time, velocity(slope), cardiac functions
+D-mode : Peak velocity, acceleration, systolic window,
+
+pressure gradient, ratio of velocity, pressure halftime,
+pulsatility index, resistance index, ete.
+Monitor : 15" non-interlace color monitor
+Probe switching _ : Electronic sector/‘linear/convex type : 3 probes
+CW Doppler single-element type : 1 probe
+:mm Power requirements : AC 120V, 220V or 230V + 10%, 50/60Hz, 1AkVA or less
+Weight : Approx. 145kgs (standard composition)
+
+EER Evacooa
+“="Probe hanger ---
+
+Probes and attachment
+
+EUB-C511. 9. 2.5~5.0MHz I0R Convex probe
+EUP-C312T 25~5.0MHz 20R Convex probe
+EUP-C314G 9 2.5~50MHz 40R Convex probe
+EUP-C318T 25~5.0MHz 76R Convex probe
+EUP-C321T 35~75MHz 10R Convex probe
+EUP-C524 = 35~75MHz 40R Convex probe
+EUP-L53 5.0~10MHz 64mm Linear probe
+EUP-L53S  5.0~10MHz 38mm Linear probe
+75~138MHz 38mm Linear probe
+2.0~35MHz Phased array probe
+2.0~35MHz Phased array probe
+25~5.0MHz Phased array probe
+35~75MHz Phased array probe
+
+25MHz Single crystal probe
+
+$.0~10MHz Linear intraoperative probe
+EUP-F531 5.0~75MHz 10R Convex finger-top prove
+EUP-F334 = 5.0~10MHz 40R Convex finger-tip prove
+EUP-OL334 5.0~10MHz 40R Convex laparoscopic probe
+EUP-B314 9 .2.5~5MHz 40R Convex biopsy probe
+
+EUP-U533 5~10/5~75MHz linear/convex biplane transrectal probe
+
+EUP-R53W 5.)~75MHz 10R Transrectal probe
+
+EUP-CC331 5.0~75MHz convex/convex biplane transrectal probe
+
+Options
+
+15" Color observation monitor:':*++-EZU-MT24-S1
+Steerable CW Doppler unit EZU-ST2
+ECG UME veer eer terres ese es EZU-EK21
+
+Miniprobe interface unit -- ~ EZU-MS6
+Miniprobe control unit (FUSINON)- -SP-711UA
+3D software (Non tracking): --EZU-3Dt
+
+Network card
+DICOM 3.0 software -
+Color video printer
+B/W video printer
+ideo cassette recorder (VCR)
+
+Foot switch -++-~
+
+EUP-V53W
+EUP-ES322
+EUP-ESS2M
+FG-34UX
+
+FG-36UX
+
+FG-38UX
+
+PL-Series
+
+EZU-PA3VE
+EZt-PA3F4
+EZU-WL2
+EZU-PA32
+EZU-PA34T
+EZU-PA3U
+€ZU-PA3C1
+EZU-PA3C1H
+EZU-PA3C2
+
+5.0~75MHz 10R convex transvaginal probe
+35~75MHz phased array biplane transesophageal probe
+35~75MHz phased array multiplane transesophageal probe
+PENTAX® ultrasound upper GL. fiberscope
+
+5.0~10MHz 10R convex, slim type
+
+PENTAX® ultrasound upper GL fiberscope
+
+5.0~10MHz 10R convex, with accessory elevator
+PENTAX? ultrasound upper GI. fiberscope
+
+5.0~10MHz 10R convex, with large channel
+
+FUJENON® miniprobe, 75~20MHz 360'°radial scan,
+2.0mm/2.6mm dia.
+
+Sterile puncture adapter for EUP-V53W, CC331 (disposable)
+Snap-on finger tip guide for EUP-F334
+
+Water bag attachment for EUP-L53
+
+Biopsy attachment for FUP-C312T
+
+Biopsy attachment for EUP-C314G
+
+Biopsy attachment for EUP-U533, CC331
+
+Oblique stand-off for EUP-L53S, L34T
+
+Oblique stand-off with biopsy hole for EUP-L53S, L34T
+Parallel stand-off for EUP-L53S
+
+Certain probes listed in this catalog, or their usage in specific
+clinical applications with certain model systems. may be limited by
+regulations or other requirements in some countries. Please contact
+your local Hitachi representative regarding such limitations.
+
+BEM Evscooo
+Ultrasound Scanner
+
+« Specifications and physical appearance may be changed without prior notice for improvement of performance.
+
+« Be sure to read Instruction Manual for correct operation of the equipment.
+. . .
+Hitachi Medical Corp.
+
+Hitachi Kamakura-bashi Bldg., 1-1-14, Uchi-kanda, Chiyoda-ku, Tokyo, Japan
+International Division
+
+Hitachi Hagoromo Bldg., 1-2-10, Uchi-kanda, Chiyoda-ku, Tokyo, Japan
+
+TELEX: 2224041 HMCTOKJ, Phane: 03-3294-3851, TELEFAX: TOKYO 03-3294-3860
+Home page adress: http://www. hitachi-medical.co.jp/
+
+CU-E101 Printed in Japan ZH-M (H)
+
