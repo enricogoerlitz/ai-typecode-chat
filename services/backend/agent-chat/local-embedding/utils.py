@@ -4,12 +4,20 @@ import pandas as pd
 import pdfplumber
 import pytesseract
 import traceback
+from multiprocessing import Pool
 
 from pdf2image import convert_from_path
 from PIL import Image
 
 
 def _extract_pdf_text_ocr(filepath) -> list[str]:
+    images = convert_from_path(filepath)
+    with Pool(processes=8) as pool:
+        pages = pool.map(pytesseract.image_to_string, images)
+    return pages
+
+
+def _extract_pdf_text_ocr_depr(filepath) -> list[str]:
     images = convert_from_path(filepath)
     pages = [pytesseract.image_to_string(img) for img in images]
 

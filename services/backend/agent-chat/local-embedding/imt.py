@@ -2,9 +2,11 @@
 import os
 import re
 import pandas as pd
+import traceback
 import utils
 import json
 
+from datetime import datetime
 from embedding import embedding_model  # noqa
 from vectorindex import vector_search_index, IMTDeviceTypeDocument  # noqa
 
@@ -53,9 +55,11 @@ def transform_imt() -> None:
         try:
             _handle_save(row)
 
-            msg = f"PROCESS: {cidx} / {total_count}\tFile '{doc_name}' successfully transformed.\n"
+            dtime = str(datetime.now())[:19]
+            msg = f"[{dtime}]\tPROCESS: {cidx} / {total_count}\tFile '{doc_name}' successfully transformed.\n"
             print(msg)
         except Exception as e:
+            traceback.print_exc()
             msg = f"PROCESS: {cidx} / {total_count}\tError at file {doc_name}. Err: {e}\n"
             print(msg)
             errors.append(msg)
