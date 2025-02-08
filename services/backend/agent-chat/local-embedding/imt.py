@@ -48,7 +48,7 @@ def transform_imt() -> None:
     for idx, row in df.iloc[watermark_index:].iterrows():
         cidx = idx + 1
         doc_name = row["DokName"]
-        metadata["matermarkIndex"] = metadata["matermarkIndex"] + 1
+        metadata["matermarkIndex"] = cidx
 
         try:
             _handle_save(row)

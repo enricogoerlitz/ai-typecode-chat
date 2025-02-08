@@ -12,4 +12,6 @@ logging.basicConfig(
     filename=filepath
 )
 
+logging.getLogger("pymongo").setLevel(logging.ERROR)
+
 logger = logging.getLogger(__name__)

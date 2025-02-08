@@ -17,9 +17,18 @@ USE_HYBRID_PRIORITIZE_DATA = "USE_HYBRID_PRIORITIZE_DATA"
 USE_HYBRID = "USE_HYBRID"
 
 
-class ChatPOSTMessagePayloadV1:
-    def __init__(self, payload: dict):
+class ChatMessagePayload:
+    def __init__(self, chat_id: str, payload: dict):
         self._payload = payload
+        self._chat_id = chat_id
+
+    @property
+    def payload(self) -> dict:
+        return self._payload
+
+    @property
+    def chat_id(self) -> str:
+        return self._chat_id
 
     @property
     def message(self) -> dict:
@@ -38,6 +47,10 @@ class ChatPOSTMessagePayloadV1:
         return self.params.get("chat", {})
 
     @property
+    def context(self) -> dict:
+        return self.params.get("context", {})
+
+    @property
     def model_dict(self) -> dict:
         return self.params.get("model", {})
 
@@ -52,6 +65,10 @@ class ChatPOSTMessagePayloadV1:
     @property
     def model_name(self) -> str:
         return self.model_dict.get("name")
+
+    @property
+    def context_device_type_code(self) -> str:
+        return self.context.get("deviceTypeCode", None)
 
     @property
     def chat_response_type(self) -> int:
@@ -104,6 +121,9 @@ class ChatPOSTMessagePayloadV1:
     @property
     def vectorsearch_use_websearch_results(self) -> bool:
         return self.vectorsearch.get("useWebSearchResults", False)
+
+    def validate(self) -> None:
+        return
 
     def get_steps(self) -> dict[dict]:
         steps = {}

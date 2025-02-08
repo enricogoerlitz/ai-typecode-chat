@@ -2,7 +2,7 @@
 
 import json
 
-from typing import Iterator, Literal
+from typing import Iterator, Callable
 
 from logger import logger
 from exc import errors
@@ -13,7 +13,7 @@ from services.websearch.v1.websearch import (
 )
 from database.vectorsearch import vector_search_index
 from utils.chat import (
-    ChatPOSTMessagePayloadV1,
+    ChatMessagePayload,
     StreamResponse,
     ChatPOSTYieldStateObject,
     
@@ -30,14 +30,16 @@ from utils.chat import (
     USE_HYBRID_PRIORITIZE_DATA,
     USE_HYBRID
 )
+from dto.document.chats import ChatMessageDTO, ChatAssistentResponse
 
 
 class AIPromptFlow:
-    def __init__(self, chat_id: str, cnf: ChatPOSTMessagePayloadV1):
+    def __init__(self, chat_id: str, cnf: ChatMessagePayload, message: ChatMessageDTO):
         self._run = False
 
         self._cnf = cnf
         self._chat_id = chat_id
+        self._message = message
         self._chat_history = []
         self._model = cnf.model_name
         self._user_message = cnf.message_content
@@ -52,17 +54,18 @@ class AIPromptFlow:
         )
 
     @property
-    def cnf(self) -> ChatPOSTMessagePayloadV1:
+    def cnf(self) -> ChatMessagePayload:
         return self._cnf
 
     @property
     def state(self) -> ChatPOSTYieldStateObject:
         return self._yield_state
 
-    def execute(self) -> Iterator[bytes]:
+    def execute(self, add_system_message: Callable) -> Iterator[bytes]:
         if self._run:
             raise Exception("A flow can be executed only once.")
 
+        system_error = None
         try:
             yield self.state.to_yield()
 
@@ -106,6 +109,18 @@ class AIPromptFlow:
             self.state.status_code = 500
 
             yield self.state.to_yield()
+        finally:
+            add_system_message(
+                chat_id=self._chat_id,
+                message=self._message,
+                content=self.state.message,
+                response=ChatAssistentResponse(
+                    statusCode=self.state.status_code,
+                    error=self.state.error
+                ),
+                system_error=system_error
+            )
+
 
     def _exec_websearch(self) -> Iterator[dict]:
         google_query = self._user_message
