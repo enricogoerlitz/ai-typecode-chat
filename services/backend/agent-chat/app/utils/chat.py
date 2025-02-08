@@ -31,6 +31,10 @@ class ChatMessagePayload:
         return self._chat_id
 
     @property
+    def message_id(self) -> str:
+        return self.payload.get("_id", None)
+
+    @property
     def message(self) -> dict:
         return self._payload.get("message", {})
 

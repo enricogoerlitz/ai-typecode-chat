@@ -31,6 +31,7 @@ from utils.chat import (
     USE_HYBRID
 )
 from dto.document.chats import ChatMessageDTO, ChatAssistentResponse
+from database.document import chatdb
 
 
 class AIPromptFlow:
@@ -71,9 +72,11 @@ class AIPromptFlow:
 
             # 1. fetch chat history
             if self.cnf.chat_history_count > 0:
-                # TODO: fetch chat history
-                self._chat_history = []
-                logger.warning("Implement fetch history")
+                self._chat_history = chatdb.find_messages_until_id_match(
+                    chat_id=self._chat_id,
+                    message_id=self._message._id,
+                    n=self.cnf.chat_history_count
+                )
 
             # 2. execute websearch
             if self.cnf.websearch_enabled:
@@ -159,7 +162,6 @@ class AIPromptFlow:
             
             serp_obj.set_websearch_summary(summary)
 
-        print("RESULT:", serp_obj.as_result_string())
         yield {
             "query_result": serp_obj,
             "result_string": serp_obj.as_result_string()
@@ -238,7 +240,7 @@ class AIPromptFlow:
 
         # 4. Generate final response
         resp: StreamResponse
-        for resp in aiclient.chat.submit_stream([
+        for resp in aiclient.chat.submit_stream(self._chat_history + [
             {
                 "role": "system",
                 "content": [{

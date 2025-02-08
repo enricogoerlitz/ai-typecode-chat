@@ -5,3 +5,14 @@ What is the maximum flight time of the drone?
 How can you contact customer support for the X-Flight Drone?
 
 What can i do, when my drone is not working?
+
+Give me a very short definition of artificial intelligence.
+
+Can you provide a well-formatted and detailed description of Artificial Intelligence (AI)? Please include a comprehensive summary with multiple bullet points, covering its definition, key concepts, applications, advantages, and challenges.
+
+# history test:
+I want to test the chat history. Please summarize the last user messages you reveived from me. Please confirm.
+Ah okay. i do understand. but why is that so?
+Sorry. I ment that i send you mmultiple context messages from roles 'user' and 'assistent'. Do you understand?
+Great. Can you provide me an summarization of 1. all user questions and 2. all assistent answers.
+Then give me a summarization of all user input of this query!

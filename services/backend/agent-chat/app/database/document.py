@@ -25,6 +25,12 @@ class IDocumentChatDB(ABC):
     def find_by_id(self, _id: str, fields: dict = None) -> dict: pass
 
     @abstractmethod
+    def find_message_by_id(self, chat_id: str, message_id: str) -> dict: pass
+
+    @abstractmethod
+    def find_messages_until_id_match(self, chat_id: str, message_id: str, n: int) -> list[dict]: pass  # noqa
+
+    @abstractmethod
     def put(self, data: ChatDTO) -> str: pass
 
     @abstractmethod
@@ -32,6 +38,9 @@ class IDocumentChatDB(ABC):
 
     @abstractmethod
     def delete(self, _id: str) -> int: pass
+
+    @abstractmethod
+    def delete_message(self, chat_id: str, message_id: str): pass
 
     @staticmethod
     def create_chatdb(
@@ -122,6 +131,37 @@ class MongoChatDB(IDocumentChatDB):
             return message_doc["messages"][0]
 
         return None
+
+    def find_messages_until_id_match(
+            self,
+            chat_id: str,
+            message_id: str,
+            n: int
+    ) -> list[dict]:
+        chat_id = ObjectId(chat_id)
+        message_id = ObjectId(message_id)
+
+        query = {"_id": chat_id}
+        fields = {
+            "messages._id": 1,
+            "messages.conversation.user.message": 1,
+            "messages.conversation.assistant.message": 1
+        }
+        doc: dict = self.collection.find_one(query, fields)
+
+        filtered_messages = []
+        for message in doc.get("messages", []):
+            if message["_id"] == message_id:
+                break
+            filtered_messages += [
+                message["conversation"]["user"]["message"],
+                message["conversation"]["assistant"]["message"]
+            ]
+
+        n = n * 2
+        filtered_messages = filtered_messages[-n:]
+
+        return filtered_messages
 
     def put(self, chat: ChatDTO) -> str:
         chat_data = chat.to_dict()

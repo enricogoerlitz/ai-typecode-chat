@@ -28,6 +28,15 @@
   color: #61dafb;
 }
 
+.chat {
+  text-align: left;
+  margin: 1rem 10rem;
+  padding: 1rem;
+  background-color: #282c34;
+  color: white;
+  border-radius: 1rem;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

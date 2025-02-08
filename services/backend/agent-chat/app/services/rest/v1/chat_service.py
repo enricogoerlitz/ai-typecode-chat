@@ -128,9 +128,7 @@ def handle_put_chat_message(chat_id: str, payload: dict) -> Iterator[Response]:
         )
 
         return Response(
-            flow.execute(
-                add_system_message=_add_system_message
-            ),
+            flow.execute(add_system_message=_add_system_message),
             mimetype="application/json"
         )
     except Exception as e:
@@ -149,6 +147,14 @@ def _add_user_message(cnf: ChatMessagePayload) -> ChatMessageDTO:
         createTimestamp=now,
         updateTimestamp=now
     )
+
+    if cnf.message_id is not None:
+        db_message = chatdb.find_message_by_id(chat_id=cnf.chat_id, message_id=cnf.message_id)
+        if db_message is None:
+            raise Exception(f"Message with _id={cnf.message_id} not found.")
+
+        message._id = db_message["_id"]
+        message.createTimestamp = db_message["createTimestamp"]
 
     user_message = ConversationUser(
         message=ChatLLMMessageDTO(role="user", content=cnf.message_content),
