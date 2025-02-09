@@ -68,12 +68,6 @@ const App = () => {
 
           const chunkJSON = JSON.parse(chunk)
           setChatResponse(chunkJSON.message)
-
-          // if (chunk.startsWith('data: ')) {
-          //   const message = chunk.slice(6);
-          //   setChatResponse((prev) => [...prev, message]);
-          // }
-
           boundary = buffer.indexOf('\n');
       }
     }

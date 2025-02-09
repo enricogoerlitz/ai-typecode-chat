@@ -27,7 +27,8 @@ def handle_get_chat(chat_id: str, is_detail) -> Response:
             fields["name"] = 1
             fields["context"] = 1
             fields["messages._id"] = 1
-            fields["messages.message"] = 1
+            fields["messages.conversation.user.message"] = 1
+            fields["messages.conversation.assistant.message"] = 1
             fields["messages.createTimestamp"] = 1
 
         result = chatdb.find_by_id(chat_id, fields=fields)
