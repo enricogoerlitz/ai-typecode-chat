@@ -21,7 +21,6 @@ export const ChatProvider: React.FC<IReactNodeChildren> = ({ children }) => {
     useEffect(() => {
 
         const fetchDeviceType = () => {
-            // http://localhost:3000/typecode/WFHD0001
             const filteredData: IDeviceType = (deviceTypeData as Array<any>).find(item => item.Typcode === typeCodeID);
             setTypeCode(filteredData);
         }
