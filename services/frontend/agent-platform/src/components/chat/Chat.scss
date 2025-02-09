@@ -303,3 +303,14 @@ $chat-utils-section-height: 2.5rem;
     user-select: none;
     pointer-events: none;
 }
+
+.spinner {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+to {
+    transform: rotate(360deg);
+}
+}
+  

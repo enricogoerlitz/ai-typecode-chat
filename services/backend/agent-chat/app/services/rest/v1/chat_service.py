@@ -1,5 +1,3 @@
-# flake8: noqa
-
 from bson import ObjectId, json_util
 from flask import Response
 from typing import Iterator
@@ -15,7 +13,8 @@ from dto.document.chats import (
     ConversationUser,
     ConversationAssistant,
     ChatLLMMessageDTO,
-    ChatAssistentResponse
+    ChatAssistentResponse,
+    ChatDTO
 )
 
 
@@ -33,7 +32,7 @@ def handle_get_chat(chat_id: str, is_detail) -> Response:
 
         result = chatdb.find_by_id(chat_id, fields=fields)
         if result is None:
-            return http_errors.not_found(f"Object with _id={chat_id} not found.")
+            return http_errors.not_found(f"Object with _id={chat_id} not found.")  # noqa
 
         return Response(
             json_util.dumps(result),
@@ -72,7 +71,7 @@ def handle_put_chats(payload: dict) -> Response:
     try:
         _id = ObjectId(payload["_id"]) if "_id" in payload else None
         name = payload.get("name", "untitled")
-        type_code = payload.get("type_code", None)
+        type_code = payload.get("typeCode", None)
 
         if type_code is None:
             raise errors.ValueErrorGeneral("Typecode should no be blank")
@@ -118,7 +117,7 @@ def handle_put_chat_message(chat_id: str, payload: dict) -> Iterator[Response]:
         cnf.validate()
 
         if not chatdb.is_chat_exising(chat_id):
-            return http_errors.not_found(f"Object with _id={chat_id} not found.")
+            return http_errors.not_found(f"Object with _id={chat_id} not found.")  # noqa
 
         message = _add_user_message(cnf)
 
@@ -134,9 +133,7 @@ def handle_put_chat_message(chat_id: str, payload: dict) -> Iterator[Response]:
         )
     except Exception as e:
         logger.error(e, exc_info=True)
-        system_error = str(e)
         return http_errors.UNEXPECTED_ERROR_RESULT
-
 
 
 def _add_user_message(cnf: ChatMessagePayload) -> ChatMessageDTO:
@@ -150,7 +147,10 @@ def _add_user_message(cnf: ChatMessagePayload) -> ChatMessageDTO:
     )
 
     if cnf.message_id is not None:
-        db_message = chatdb.find_message_by_id(chat_id=cnf.chat_id, message_id=cnf.message_id)
+        db_message = chatdb.find_message_by_id(
+            chat_id=cnf.chat_id,
+            message_id=cnf.message_id
+        )
         if db_message is None:
             raise Exception(f"Message with _id={cnf.message_id} not found.")
 

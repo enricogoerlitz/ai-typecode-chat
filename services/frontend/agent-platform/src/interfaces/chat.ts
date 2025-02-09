@@ -14,9 +14,9 @@ export interface IContext {
 }
 
 export interface IMessage {
-    _id: IOid;
+    _id: IOid | null;
     conversation: IConversation;
-    createTimestamp: ITimestamp;
+    createTimestamp: ITimestamp | null;
 }
 
 export interface IConversation {
@@ -35,4 +35,37 @@ export interface IMessageContent {
 
 export interface ITimestamp {
     $date: string;
+}
+
+export interface IMessagePUTRequestData {
+    _id?: string | null;
+    message: {
+        type: "text";
+        content: string;
+    };
+    requestParameters: {
+        model: {
+            name: string;
+        };
+        context: {
+            deviceTypeCode: string;
+        };
+        chat: {
+            responseType: "USE_DATA_ONLY" | "USE_HYBRID_PRIORITIZE_DATA" | "USE_HYBRID";
+            messageHistoryCount: number;
+        };
+        webSearch: {
+            enabled: boolean;
+            optimizeWebSearchQuery: boolean;
+            optimizeWebSearchResults: boolean;
+            deepSearchEnabled: boolean;
+            maxResultCount: number;
+        };
+        vectorSearch: {
+            enabled: boolean;
+            optimizeVectorSearchQuery: boolean;
+            useWebSearchResults: boolean;
+            maxResultCount: number;
+        };
+    };
 }
