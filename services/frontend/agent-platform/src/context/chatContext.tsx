@@ -143,17 +143,12 @@ export const ChatProvider: React.FC<IReactNodeChildren> = ({ children }) => {
                 const chatName = "untitled";
                 const chatID = await chatRESTService.putChat(chatName, typeCodeID);
                 if (chatID === null) return;
-    
-                ;
-    
                 chat = getEmptyChat(chatID, chatName, typeCodeID);
             }
     
             const message = getNewMessage(chatRequest.message.content);
             chat.messages.push(message);
             setChat({...chat});
-            
-            
             await chatRESTService.putMessageStream(chat!._id.$oid, chatRequest, _setChatResponseStream);
             setMessage("");
         } finally {
@@ -161,13 +156,19 @@ export const ChatProvider: React.FC<IReactNodeChildren> = ({ children }) => {
         }
     };
 
+    const changeTypeCodeID = (id: string | null) => {
+        setTypeCodeID(id);
+        setChat(null);
+    }
+
 
     return (
         <ChatContext.Provider value={{ 
             isChatLoading,
             setMessage,
             showChat, setShowChat,
-            typeCode, setTypeCodeID,
+            typeCode,
+            setTypeCodeID: changeTypeCodeID,
             chat, sendMessage,
             chatRequest, setChatRequest
          }}>

@@ -140,7 +140,8 @@ $chat-utils-section-height: 2.5rem;
             max-height: 1rem;
             display: flex;
             flex-direction: column;
-
+            margin-top: 1.5rem;
+            gap: 2rem
         }
 
         &__message {
@@ -189,8 +190,31 @@ $chat-utils-section-height: 2.5rem;
         }
 
         &__message.user {
+            position: relative;
             align-self: flex-end;
             max-width: 75%;
+
+            // &::before {
+            //     content: "you";
+            //     position: absolute;
+            //     top: -25px;
+            //     right: 2.5rem;
+            //     z-index: 100;
+            //     color: rgba(255, 255, 255, 0.334);
+            // }
+        }
+
+        &__message.assistant {
+            position: relative;
+
+            &::before {
+                content: "🤖 assistant";
+                position: absolute;
+                top: -25px;
+                left: 1rem;
+                z-index: 100;
+                color: rgba(255, 255, 255, 0.334);
+            }
         }
 
     }
@@ -309,8 +333,8 @@ $chat-utils-section-height: 2.5rem;
 }
 
 @keyframes spin {
-to {
-    transform: rotate(360deg);
-}
+    to {
+        transform: rotate(360deg);
+    }
 }
   

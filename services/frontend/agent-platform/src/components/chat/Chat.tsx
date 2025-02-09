@@ -1,12 +1,10 @@
 import React, { useCallback, useContext, useEffect, useRef, useState } from "react"
 import { ChatContext, IChatContext } from "../../context/chatContext.tsx";
-import ReactMarkdown from "react-markdown"
 import { RiChatAiFill } from "react-icons/ri";
 import { IoIosSettings, IoMdSend } from "react-icons/io";
 import { IoClose, IoGlobeOutline, IoDocument } from "react-icons/io5";
 import { FaRobot } from "react-icons/fa6";
 import { FaSpinner } from "react-icons/fa";
-
 
 
 import "./Chat.scss"
@@ -68,14 +66,10 @@ const Chat: React.FC = () => {
         return result > maxRowCount ? maxRowCount : result
     }
 
-    const handleSubmitMessage = () => {
-        sendMessage()
-    }
-
     const handleKeyDownSubmitMessage = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key !== "Enter" || event.shiftKey) return;
         event.preventDefault();
-        handleSubmitMessage();
+        sendMessage();
     };
 
     return (
@@ -103,14 +97,14 @@ const Chat: React.FC = () => {
                         {chat?.messages.map((msg, msgIdx) => (
                             <React.Fragment key={msgIdx}>
                                 <li className="chat-window__messages__message user">
-                                    <p className="chat-window__messages__message__content user">
+                                    <div style={{ whiteSpace: "pre-wrap" }} className="chat-window__messages__message__content user">
                                         {msg.conversation.user.message.content}
-                                    </p>
+                                    </div>
                                 </li>
                                 <li className="chat-window__messages__message assistant">
-                                    <ReactMarkdown className="chat-window__messages__message__content assistant">
+                                    <div style={{ whiteSpace: "pre-wrap" }}  className="chat-window__messages__message__content assistant">
                                         {msg.conversation.assistant.message.content}
-                                    </ReactMarkdown>
+                                    </div>
                                 </li>
                             </React.Fragment>
                         ))}
@@ -146,9 +140,8 @@ const Chat: React.FC = () => {
                             <IoDocument />
                             Dok. durchsuchen
                         </button>
-                        <button className="chat-send-button" onClick={handleSubmitMessage}>
+                        <button className="chat-send-button" onClick={sendMessage}>
                             {isChatLoading ? <FaSpinner className="spinner" /> : <IoMdSend />}
-                            
                         </button>
                     </div>
                 </div>
