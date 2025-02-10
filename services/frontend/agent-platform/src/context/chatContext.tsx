@@ -2,7 +2,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import { IReactNodeChildren } from '../interfaces/component.ts';
 import { IDeviceType } from '../interfaces/imt.ts';
 import deviceTypeData from "../assets/deviceTypesData.json";
-import { IChat, IMessage, IMessagePUTRequestData } from '../interfaces/chat.ts';
+import { IChat, IMessage, IMessagePUTRequestData, IStreamMessageResponse } from '../interfaces/chat.ts';
 import chatRESTService from '../services/chatService.ts';
 
 
@@ -26,7 +26,7 @@ const getDefaultChatRequest = (): IMessagePUTRequestData => {
             },
             "webSearch": {
                 "enabled": false,
-                "optimizeWebSearchQuery": true,
+                "optimizeWebSearchQuery": false,
                 "optimizeWebSearchResults": true,
                 "deepSearchEnabled": false,
                 "maxResultCount": 5
@@ -83,6 +83,8 @@ export interface IChatContext {
     isChatLoading: boolean;
     chat: IChat | null;
     chatRequest: IMessagePUTRequestData;
+    chatStreamMessageResponse: IStreamMessageResponse | null;
+    setChat: (chat: IChat | null) => void;
     setMessage: (message: string) => void;
     setChatRequest: (chatRequest: IMessagePUTRequestData) => void;
     sendMessage: () => Promise<void>;
@@ -97,11 +99,12 @@ export interface IChatContext {
 export const ChatContext = createContext<IChatContext | undefined>(undefined);
 
 export const ChatProvider: React.FC<IReactNodeChildren> = ({ children }) => {
+    let [chat, setChat] = useState<IChat | null>(null);
+    const [chatStreamMessageResponse, setChatStreamMessageResponse] = useState<IStreamMessageResponse | null>(null);
     const [isChatLoading, setIsChatLoading] = useState(false);
     const [showChat, setShowChat] = useState(false);
     const [typeCode, setTypeCode] = useState<IDeviceType | null>(null);
     const [typeCodeID, setTypeCodeID] = useState<string | null>(null);
-    let [chat, setChat] = useState<IChat | null>(null);
     const [chatRequest, setChatRequest] = useState<IMessagePUTRequestData>(getDefaultChatRequest());
 
     useEffect(() => {
@@ -117,12 +120,12 @@ export const ChatProvider: React.FC<IReactNodeChildren> = ({ children }) => {
 
     }, [typeCodeID, setTypeCodeID]);
 
-    const _setChatResponseStream = (message: string): void => {
+    const _setChatResponseStream = (messageResponse: IStreamMessageResponse): void => {
+        setChatStreamMessageResponse(messageResponse);
+
         const updatedChat = {...chat} as IChat;
-
         const messageIndex = updatedChat.messages!.length - 1;
-
-        updatedChat.messages![messageIndex].conversation.assistant.message.content = message
+        updatedChat.messages![messageIndex].conversation.assistant.message.content = messageResponse.message
 
         setChat(updatedChat);
     }
@@ -150,7 +153,23 @@ export const ChatProvider: React.FC<IReactNodeChildren> = ({ children }) => {
             chat.messages.push(message);
             setChat({...chat});
             await chatRESTService.putMessageStream(chat!._id.$oid, chatRequest, _setChatResponseStream);
-            setMessage("");
+            const updatedChatRequest = {
+                ...chatRequest,
+                message: {
+                    ...chatRequest.message,
+                    content: ""
+                },
+                requestParameters: {
+                    ...chatRequest.requestParameters,
+                    webSearch: {
+                        ...chatRequest.requestParameters.webSearch,
+                        enabled: false
+                    }
+                }
+            } as IMessagePUTRequestData;
+
+            setChatRequest(updatedChatRequest)
+
         } finally {
             setIsChatLoading(false);
         }
@@ -170,6 +189,8 @@ export const ChatProvider: React.FC<IReactNodeChildren> = ({ children }) => {
         <ChatContext.Provider value={{ 
             isChatLoading,
             setMessage,
+            chatStreamMessageResponse,
+            setChat,
             showChat, setShowChat,
             typeCode,
             setTypeCodeID: changeTypeCodeID,

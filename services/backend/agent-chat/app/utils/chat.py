@@ -172,10 +172,10 @@ class ChatMessagePayload:
 
 
 @dataclass
-class ChatPOSTYieldStateObject:
+class ChatPUTYieldStateObject:
     steps: dict[dict]
-    current_step: str
-    status_code: int
+    currentStep: str
+    statusCode: int
     message: str
     error: str | None
 
@@ -183,17 +183,22 @@ class ChatPOSTYieldStateObject:
         return json.dumps(asdict(self)) + "\n"
 
     def next_step(self, next_step: str) -> None:
-        self.steps[self.current_step]["state"] = "FINISHED"
+        self.steps[self.currentStep]["state"] = "FINISHED"
 
         self.steps[next_step]
         self.steps[next_step]["state"] = "STARTED"
-        self.current_step = next_step
+        self.currentStep = next_step
 
     def set_message(self, message: str) -> None:
         self.message = message
 
-    def append_message(self, message: str) -> None:
-        self.message += message
+    def append_message(self, message: str, break_lines: int = 1) -> None:
+        if self.message == "":
+            self.message = message
+            return
+
+        lines = "\n" * break_lines
+        self.message = lines.join([self.message, message])
 
 
 @dataclass(frozen=True)

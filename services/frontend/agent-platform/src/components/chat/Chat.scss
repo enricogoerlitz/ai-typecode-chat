@@ -16,6 +16,10 @@ $chat-window-footer-padding: .85rem;
 
 $chat-utils-section-height: 2.5rem;
 
+#chat-window-space {
+    margin-top: -1.5rem;
+}
+
 #chat-button {
     all: unset;
 
@@ -108,7 +112,7 @@ $chat-utils-section-height: 2.5rem;
             padding: .2rem;
             margin-top: -.1rem;
 
-            background-color: #25292f;
+            background-color: transparent; //#25292f;
             svg {
                 font-size: 1.5rem;
             }
@@ -124,7 +128,7 @@ $chat-utils-section-height: 2.5rem;
     .chat-window__messages {
         all: unset;
         overflow-y: scroll;
-        margin-bottom: 1rem;
+        margin-bottom: .75rem;
         
         // make the full height available!
         flex-grow: 1;
@@ -325,6 +329,8 @@ $chat-utils-section-height: 2.5rem;
         flex-direction: column;
         margin-top: 2rem;
         gap: 2rem;
+    overflow-x: hidden;
+
 
         &__section {
             display: flex;
@@ -352,7 +358,7 @@ $chat-utils-section-height: 2.5rem;
                 padding: .5rem 0;
 
                 .label {
-                    width: 20rem;
+                    width: 18rem;
                     font-weight: 500;
                 }
 
@@ -371,11 +377,15 @@ $chat-utils-section-height: 2.5rem;
                         }
                     }
                     &.text, &.number {
-                        margin-left: -.5rem;
+                        // margin-left: -.5rem;
                     }
                 }
 
             }
+        }
+
+        &__request-section {
+            overflow-x: scroll;
         }
     }
 }

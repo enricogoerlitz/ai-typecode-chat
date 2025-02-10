@@ -5,6 +5,14 @@ export interface IChat {
     messages: IMessage[];
 }
 
+export interface IStreamMessageResponse {
+    steps: object;
+    currentStep: string;
+    statusCode: number;
+    message: string;
+    error: string | null;
+}
+
 export interface IOid {
     $oid: string;
 }

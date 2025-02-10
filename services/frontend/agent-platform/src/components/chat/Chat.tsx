@@ -12,6 +12,7 @@ import ChatSettings from "./ChatSettings.tsx";
 
 const Chat: React.FC = () => {
     const {
+        chatStreamMessageResponse,
         isChatLoading,
         typeCode,
         showChat,
@@ -20,7 +21,8 @@ const Chat: React.FC = () => {
         setMessage,
         setShowChat,
         sendMessage,
-        setChatRequest
+        setChatRequest,
+        setChat
     } = useContext(ChatContext) as IChatContext;
     const [showChatSettings, setShowChatSettings] = useState(false)
     const promptInputRef = useRef<HTMLTextAreaElement | null>(null)
@@ -51,7 +53,13 @@ const Chat: React.FC = () => {
 
 
     useEffect(() => {
-        _scrollMessagesContainer()
+        if (!isChatLoading) {
+            promptInputRef.current?.focus();
+        }
+    }, [isChatLoading]);
+
+    useEffect(() => {
+        _scrollMessagesContainer();
     }, [chat, chatRequest, _scrollMessagesContainer]); 
 
     const getPromptLineBreaks = () => {
@@ -68,10 +76,10 @@ const Chat: React.FC = () => {
         return result > maxRowCount ? maxRowCount : result
     }
 
-    const handleKeyDownSubmitMessage = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const handleKeyDownSubmitMessage = async (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
         if (event.key !== "Enter" || event.shiftKey) return;
         event.preventDefault();
-        sendMessage();
+        await sendMessage();
     };
 
     return (
@@ -90,7 +98,11 @@ const Chat: React.FC = () => {
             >
                 <div className="chat-window__header">
                     <h4 className="chat-window__header__title"><FaRobot />Chatbot{typeCode ? ` (${typeCode.Typcode})` : ""}</h4>
-                    <button className="chat-window__header__close" onClick={() => setShowChat(false)}>
+                    <button className="chat-window__header__close" onClick={() => {
+                        setShowChatSettings(false);
+                        setShowChat(false);
+                        setChat(null);
+                    }}>
                         <IoClose />
                     </button>
                 </div>
@@ -110,6 +122,18 @@ const Chat: React.FC = () => {
                                 </li>
                             </React.Fragment>
                         ))}
+                        <li id="chat-window-space">
+                            {isChatLoading &&  <FaSpinner className="spinner" />}
+
+                            {chatStreamMessageResponse && (
+                                <>
+                                    <span>{chatStreamMessageResponse.error && `Error: ${chatStreamMessageResponse.error}`}</span>
+                                    <span>
+                                        {isChatLoading && !chatStreamMessageResponse.error && chatStreamMessageResponse.currentStep}
+                                    </span>
+                                </>
+                            )}
+                        </li>
                     </ul>
                 </div>
                 <div
@@ -120,9 +144,10 @@ const Chat: React.FC = () => {
                         id="prompt-input"
                         ref={promptInputRef}
                         autoFocus={true}
+                        disabled={isChatLoading}
                         rows={getPromptLineBreaks()}
                         className="chat-window__footer__input"
-                        value={chatRequest.message.content}
+                        value={isChatLoading ? "" : chatRequest.message.content}
                         onChange={(e) => setMessage(e.target.value)}
                         onKeyDown={handleKeyDownSubmitMessage}
                         placeholder="Ask me any question &nbsp;🚀"

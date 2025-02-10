@@ -12,9 +12,7 @@ interface IChatSettings {
 
 const ChatSettings: React.FC<IChatSettings> = ({ show, setShow }) => {
     const {
-        typeCode,
         chatRequest,
-        setShowChat,
         setChatRequest
     } = useContext(ChatContext) as IChatContext;
 
@@ -22,12 +20,10 @@ const ChatSettings: React.FC<IChatSettings> = ({ show, setShow }) => {
 
     const reqString = "```json\n" + JSON.stringify(chatRequest, null, 4) + "\n```"
 
-    console.log("REQ:", req)
-
     return (
         <div id="chat-settings" className={show ? "" : "hidden"}>
             <div className="chat-settings__header">
-                <h4 className="chat-settings__header__title">Chat Settings{typeCode ? ` (${typeCode.Typcode})` : ""}</h4>
+                <h4 className="chat-settings__header__title">Chat Settings</h4>
                 <button className="chat-settings__header__close" onClick={() => setShow(false)}>
                     <IoClose />
                 </button>
@@ -231,7 +227,9 @@ const ChatSettings: React.FC<IChatSettings> = ({ show, setShow }) => {
                     </div>
                     <div className="chat-settings__sections__section">
                         <h5 className="chat-settings__sections__section__header">Request</h5>
-                        <ReactMarkdown>{reqString}</ReactMarkdown>
+                        <div className="chat-settings__sections__request-section">
+                            <ReactMarkdown>{reqString}</ReactMarkdown>
+                        </div>
                     </div>
                 </div>
             </div>

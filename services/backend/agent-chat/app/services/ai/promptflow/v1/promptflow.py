@@ -15,7 +15,7 @@ from database.vectorsearch import vector_search_index
 from utils.chat import (
     ChatMessagePayload,
     StreamResponse,
-    ChatPOSTYieldStateObject,
+    ChatPUTYieldStateObject,
     
     INITIALIZE_CONNECTION,
     OPTIMIZE_WEB_SEARCH_QUERY,
@@ -46,10 +46,10 @@ class AIPromptFlow:
         self._user_message = cnf.message_content
         self._websearch_result = {"result_string": "no results"}
         self._vectorsearch_result = {"result_string": "no results"}
-        self._yield_state = ChatPOSTYieldStateObject(
+        self._yield_state = ChatPUTYieldStateObject(
             steps=cnf.get_steps(),
-            current_step=INITIALIZE_CONNECTION,
-            status_code=200,
+            currentStep=INITIALIZE_CONNECTION,
+            statusCode=200,
             message="",
             error=None
         )
@@ -59,7 +59,7 @@ class AIPromptFlow:
         return self._cnf
 
     @property
-    def state(self) -> ChatPOSTYieldStateObject:
+    def state(self) -> ChatPUTYieldStateObject:
         return self._yield_state
 
     def execute(self, add_system_message: Callable) -> Iterator[bytes]:
@@ -94,14 +94,14 @@ class AIPromptFlow:
 
         except ValueError as e:
             self.state.error = str(e)
-            self.state.status_code = 400
+            self.state.statusCode = 400
             yield self.state.to_yield()
 
         except errors.AIClientRateLimitError as e:
             logger.warning(e)
 
             self.state.error = str(e)
-            self.state.status_code = 429
+            self.state.statusCode = 429
 
             yield self.state.to_yield()
 
@@ -109,7 +109,7 @@ class AIPromptFlow:
             logger.error(e, exc_info=True)
 
             self.state.error = "An unexpected error has occored."
-            self.state.status_code = 500
+            self.state.statusCode = 500
 
             yield self.state.to_yield()
         finally:
@@ -118,7 +118,7 @@ class AIPromptFlow:
                 message=self._message,
                 content=self.state.message,
                 response=ChatAssistentResponse(
-                    statusCode=self.state.status_code,
+                    statusCode=self.state.statusCode,
                     error=self.state.error
                 ),
                 system_error=system_error
@@ -129,14 +129,14 @@ class AIPromptFlow:
         google_query = self._user_message
         if self.cnf.websearch_optimize_web_search_query:
             self.state.next_step(OPTIMIZE_WEB_SEARCH_QUERY)
-            self.state.append_message("\nOptimizing your question for websearch to:\n")
+            self.state.append_message("Optimizing your question for websearch to:\n", 1)
             yield
 
             for google_query in self._optimize_websearch_query():
                 yield
 
         self.state.next_step(EXECUTE_WEB_SEARCH)
-        self.state.append_message("\nSearching the web for you...:\n")
+        # self.state.append_message("Searching the web for you...", 1)
         yield
 
         serp_obj = serp_client.search(
@@ -144,7 +144,7 @@ class AIPromptFlow:
             max_results=self.cnf.websearch_max_result_count
         )
 
-        self.state.append_message(json.dumps(serp_obj.obj, indent=2))
+        # self.state.append_message(json.dumps(serp_obj.obj, indent=2), 1)
         yield
 
         if self.cnf.websearch_depp_search_enabled:
@@ -169,12 +169,12 @@ class AIPromptFlow:
 
     def _exec_deep_websearch(self, serp_obj: SERPResponseObject) -> Iterator:
         self.state.next_step(EXECUTE_DEEP_SEARCH)
-        self.state.append_message("\nExecuting deep search for you:\n")
+        self.state.append_message("Executing deep search for you:", 1)
         yield
 
         deep_search_results = []
         for link in serp_obj.get_links():
-            self.state.append_message(f"Processing link: {link}\n")
+            self.state.append_message(f"Processing link: {link}", 1)
 
             html_text = fetch_url_content(link)
             for summary in self._summarize_html_content(html_content=html_text):
@@ -212,7 +212,7 @@ class AIPromptFlow:
         if len(search_results) > max_result_count:
             search_results = search_results[:max_result_count-1]
 
-        search_results_str = "### Document search results"
+        search_results_str = "Document search results\n"
         for i, result in enumerate(search_results):
             search_results_str = self._add_vectorsearch_result_string(
                 prompt=search_results_str,
@@ -225,9 +225,9 @@ class AIPromptFlow:
             "result_string": search_results_str
         }
 
-    def _exec_generate_final_response(self) -> Iterator[ChatPOSTYieldStateObject]:
+    def _exec_generate_final_response(self) -> Iterator[ChatPUTYieldStateObject]:
         self.state.next_step(EXECUTE_GENERATE_FINAL_MESSAGE)
-        self.state.append_message("\n\n\n### Final result:\n")
+        self.state.append_message("# Final result\n\n", 3)
 
         websearch_result_str = self._websearch_result.get("result_string", "no results")
         vectorsearch_result_str = self._vectorsearch_result.get("result_string", "")
@@ -357,7 +357,7 @@ Your goal is to generate an optimized Google search query based on the user's me
 
     def _optimize_vectorsearch_query(self) -> Iterator[str]:
         self.state.next_step(OPTIMIZE_VECTOR_SEARCH_QUERY)
-        self.state.append_message("\n\nWe are optimizing your message for besser vector search:\n")
+        self.state.append_message("We are optimizing your message for besser vector search:", 1)
         yield
 
         websearch_result_str = self._websearch_result.get("result_string", "no results")
@@ -403,7 +403,7 @@ Here is the provided information:
 
     def _summarize_websearch_results(self, serp_obj: SERPResponseObject) -> Iterator[str]:
         self.state.next_step(OPTIMIZE_WEB_SEARCH_RESULT)
-        self.state.append_message("\n### Optimizing the web search results\n")
+        self.state.append_message("Optimizing the web search results\n", 2)
         yield
 
         websearch_result_str = str(serp_obj.obj)

@@ -1,6 +1,6 @@
 import axios from "axios";
 import RESTService, { getAxiosEmptyConfig } from "./abstract.ts";
-import { IMessagePUTRequestData } from "../interfaces/chat";
+import { IMessagePUTRequestData, IStreamMessageResponse } from "../interfaces/chat";
 
 
 const BASE_ROUTE = "/api/v1";
@@ -33,12 +33,10 @@ class ChatRESTService extends RESTService {
     public async putMessageStream(
         chatID: string,
         requestData: IMessagePUTRequestData,
-        setChatResponse: (message: string) => void
+        setChatResponse: (message: IStreamMessageResponse) => void
     ): Promise<boolean> {
         const url = `${this.url(ROUTE, chatID)}/messages`;
         try {
-
-            setChatResponse("");
 
             // "http://localhost:8000/api/v1/chats/67a71e1201a11db986651334/messages"
             const response = await fetch(url, {
@@ -67,8 +65,10 @@ class ChatRESTService extends RESTService {
                     buffer = buffer.slice(boundary + 1);
             
                     const chunkJSON = JSON.parse(chunk)
-                    setChatResponse(chunkJSON.message)
+                    setChatResponse(chunkJSON)
                     boundary = buffer.indexOf("\n");
+
+                    console.log(chunkJSON)
                 }
             }
 
