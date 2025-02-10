@@ -18,6 +18,9 @@ XL_DEVICE_TYPES_PATH = "../../../../resources/data/imt/imt_deviceTypes.xlsx"
 TRANSFORMED_DATA_PATH = "./documents"
 TRANSFORMED_META_PATH = "./documents/__meta.json"
 
+EMBEDDING_DATA_PATH = "./embeddings"
+EMBEDDING_META_PATH = "./embeddings/__meta.json"
+
 
 def _sanitize_string_for_index_key(name: str) -> str:
     return re.sub(r'[^a-zA-Z0-9\-_]', '_', name)
@@ -53,7 +56,7 @@ def transform_imt() -> None:
         metadata["matermarkIndex"] = cidx
 
         try:
-            _handle_save(row)
+            _handle_transform(row)
 
             dtime = str(datetime.now())[:19]
             msg = f"[{dtime}]\tPROCESS: {cidx} / {total_count}\tFile '{doc_name}' successfully transformed.\n"
@@ -77,7 +80,7 @@ def transform_imt() -> None:
     print("\n\n------------------ END ERRORS ------------------")
 
 
-def import_imt() -> None:
+def depr__import_imt() -> None:
     print("\n\n\nSTART LOADING EXCEL FILES")
     df_files = pd.read_excel(XL_FILES_PATH)[["DokID", "Typcode", "DokName"]]
     df_device_types = pd.read_excel(XL_DEVICE_TYPES_PATH)[["Typcode", "Gerät ID"]]
@@ -112,6 +115,61 @@ def import_imt() -> None:
     print("\n\n------------------ END ERRORS ------------------")
 
 
+def embed_imt() -> None:
+    metadata: dict = {
+        "matermarkIndex": 0,
+        "errors": []
+    }
+
+    with open(TRANSFORMED_META_PATH, "r") as f:
+        metadata = json.loads(f.read())
+
+    if metadata["matermarkIndex"] == 0:
+        metadata["errors"] = []
+
+    watermark_index = metadata["matermarkIndex"]
+
+    print("\n\n\nSTART LOADING EXCEL FILES")
+    df_files = pd.read_excel(XL_FILES_PATH)[["DokID", "Typcode", "DokName"]]
+    df_device_types = pd.read_excel(XL_DEVICE_TYPES_PATH)[["Typcode", "Gerät ID"]]
+
+    df = pd.merge(df_files, df_device_types, how="inner", on="Typcode")
+
+    errors: list[str] = metadata["errors"]
+    total_count = df["Typcode"].count()
+
+    print(f"START EMBEDDING: {total_count} FILES\n\n")
+    for idx, row in df.iloc[watermark_index:].iterrows():
+        cidx = idx + 1
+        doc_name = row["DokName"]
+        metadata["matermarkIndex"] = cidx
+
+        try:
+            _handle_embedding(row)
+
+            dtime = str(datetime.now())[:19]
+            msg = f"[{dtime}]\tPROCESS: {cidx} / {total_count}\tFile '{doc_name}' successfully transformed.\n"
+            print(msg)
+        except Exception as e:
+            traceback.print_exc()
+            msg = f"PROCESS: {cidx} / {total_count}\tError at file {doc_name}. Err: {e}\n"
+            print(msg)
+            errors.append(msg)
+        finally:
+            with open(TRANSFORMED_META_PATH, "w") as f:
+                f.write(json.dumps(metadata))
+
+
+    print("\n\n\n-------------------- ERRORS --------------------\n\n")
+    if len(errors) == 0:
+        print("No errors :)")
+    else:
+        for err in errors:
+            print(err)
+    print("\n\n------------------ END ERRORS ------------------")
+
+
+
 def _handle_import(row: dict) -> None:
     typcode = row["Typcode"]
     doc_id = row["DokID"]
@@ -144,7 +202,7 @@ def _handle_import(row: dict) -> None:
     vector_search_index.put_documents(documents)
 
 
-def _handle_save(row: dict) -> None:
+def _handle_transform(row: dict) -> None:
     typcode = row["Typcode"]
     doc_id = row["DokID"]
     doc_name = row["DokName"]
@@ -174,6 +232,80 @@ def _handle_save(row: dict) -> None:
 
         final_text = document_json_str + "\n\n" + orc_text
         f.write(final_text)
+
+
+
+
+def _generate_embedding_string(doc: dict, page: dict, index: int) -> str:
+    doc_id = doc["doc_id"]
+    doc_name = doc["doc_name"]
+    typcode = doc["typcode"]
+    device_id = doc["device_id"]
+
+    ocr_result = page["ocr_text"]
+    tables = page["pdfplumber"]["tables"]
+    pdf_reader_result = page["pdfplumber"]["text"]
+
+    embed_content = f"""# DOCUMENT METADATA START #
+Document ID: {int(doc_id)}
+Document Name: {doc_name}
+Document Page Number: {index + 1}
+Typecode: {typcode}
+Device ID: {int(device_id)}
+# DOCUMENT METADATA END #
+# DOCUMENT CONTENT START #
+## OCR RESULT
+{ocr_result}
+## PDF READER RESULT
+{pdf_reader_result}
+## PDF TABLES
+{tables}
+# DOCUMENT CONTENT END #
+"""
+
+    return embed_content
+
+
+def _handle_embedding(row: dict) -> None:
+    typcode = row["Typcode"]
+    doc_id = row["DokID"]
+    doc_name = row["DokName"]
+    device_id = row["Gerät ID"]
+
+    filepath = os.path.join(DATA_FOLDER_PATH, doc_name)
+    filepath = TRANSFORMED_DATA_PATH + "/" + doc_name + ".imt.txt"
+
+    with open(filepath, "r") as f:
+        doc_json = json.loads(f.readline())
+
+    # TODO: das ganze dann noch von ChatGPT aufbereiten!
+    pages = [_generate_embedding_string(doc_json, page, i) for i, page in enumerate(doc_json["pages"])]
+    print(pages)
+    return
+
+    # LLM Correction, adding Keywords, adding semantic meaning
+    embeddings = embedding_model.embed(pages)
+    # LLM Summary mit Multi-processing druchführen
+
+    documents = [
+        IMTDeviceTypeDocument(
+            id=_sanitize_string_for_index_key(f"{doc_id}_{doc_name}_page_{page_number + 1}"),  # noqa
+            deviceID=device_id,
+            deviceTypeID=typcode,
+            documentID=doc_id,
+            documentName=doc_name,
+            documentPageNumber=page_number + 1,
+            documentPageContent=text_data[page_number],
+            documentPageContentEmbedding=embedding,
+            documentPageSummary=summary,
+            metadata_json=""
+        )
+        for page_number, embedding in enumerate(embeddings)
+    ]
+
+    # Store to filesystem, not put it yet!
+
+    # vector_search_index.put_documents(documents)
 
 
 def _prep_page_content_for_txt(ocr_text: str, pnum: int, psum: int) -> str:

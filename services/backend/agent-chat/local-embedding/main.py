@@ -6,7 +6,7 @@ load_dotenv()
 
 
 from dummy import import_dummy  # noqa
-from imt import import_imt, transform_imt  # noqs
+from imt import transform_imt  # noqa
 
 
 def main() -> None:

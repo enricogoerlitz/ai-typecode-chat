@@ -1,5 +1,6 @@
 resources/data/imt
 services/backend/agent-chat/local-embedding/documents/*.imt.txt
+services/backend/agent-chat/local-embedding//*.imt.txt
 services/frontend/agent-platform/src/assets/deviceTypesData.json
 
 .vscode

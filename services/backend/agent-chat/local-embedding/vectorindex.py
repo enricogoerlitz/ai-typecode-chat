@@ -27,6 +27,7 @@ class IMTDeviceTypeDocument(Document):
     documentPageNumber = Integer()
     documentPageContent = Text(analyzer="standard")
     documentPageContentEmbedding = DenseVector(dims=3072)
+    documentPageSummary = Text(analyzer="standard")
     metadata_json = Text()
 
     class Index:
