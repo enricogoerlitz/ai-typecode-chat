@@ -239,8 +239,8 @@ def _handle_transform(row: dict) -> None:
 def _generate_embedding_string(doc: dict, page: dict, index: int) -> str:
     doc_id = doc["doc_id"]
     doc_name = doc["doc_name"]
-    typcode = doc["typcode"]
-    device_id = doc["device_id"]
+    typcode = doc["typcode"]  # should be a list of all typecodes
+    device_id = doc["device_id"]  # should be a list of all device ids
 
     ocr_result = page["ocr_text"]
     tables = page["pdfplumber"]["tables"]
@@ -250,8 +250,8 @@ def _generate_embedding_string(doc: dict, page: dict, index: int) -> str:
 Document ID: {int(doc_id)}
 Document Name: {doc_name}
 Document Page Number: {index + 1}
-Typecode: {typcode}
-Device ID: {int(device_id)}
+Typecodes: {typcode}
+Device IDs: {int(device_id)}
 # DOCUMENT METADATA END #
 # DOCUMENT CONTENT START #
 ## OCR RESULT

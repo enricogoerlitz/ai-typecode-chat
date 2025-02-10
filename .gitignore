@@ -179,3 +179,7 @@ override.tf.json
 .terraform.lock.hcl
 .vscode/PythonImportHelper-v2-Completion.json
 PythonImportHelper-v2-Completion.json
+
+
+services/backend/agent-chat/local-embedding/etl/data/00-master-data/*.xlsx
+services/backend/agent-chat/local-embedding/etl/data/*/*.pdf.txt
