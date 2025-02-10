@@ -157,7 +157,11 @@ export const ChatProvider: React.FC<IReactNodeChildren> = ({ children }) => {
     };
 
     const changeTypeCodeID = (id: string | null) => {
+        const updatedRequest = {...chatRequest}
+        updatedRequest.requestParameters.context.deviceTypeCode = id || "";
+
         setTypeCodeID(id);
+        setChatRequest(updatedRequest);
         setChat(null);
     }
 

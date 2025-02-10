@@ -8,6 +8,7 @@ import { FaSpinner } from "react-icons/fa";
 
 
 import "./Chat.scss"
+import ChatSettings from "./ChatSettings.tsx";
 
 const Chat: React.FC = () => {
     const {
@@ -18,14 +19,15 @@ const Chat: React.FC = () => {
         chatRequest,
         setMessage,
         setShowChat,
-        sendMessage
+        sendMessage,
+        setChatRequest
     } = useContext(ChatContext) as IChatContext;
     const [showChatSettings, setShowChatSettings] = useState(false)
     const promptInputRef = useRef<HTMLTextAreaElement | null>(null)
     const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
 
-    const scrollMessagesContainer = useCallback(() => {
+    const _scrollMessagesContainer = useCallback(() => {
         if (!messagesContainerRef.current || !chat) {
             return;
         }
@@ -49,10 +51,10 @@ const Chat: React.FC = () => {
 
 
     useEffect(() => {
-        scrollMessagesContainer()
-    }, [chat, chatRequest, scrollMessagesContainer]); 
+        _scrollMessagesContainer()
+    }, [chat, chatRequest, _scrollMessagesContainer]); 
 
-    function getPromptLineBreaks() {
+    const getPromptLineBreaks = () => {
         const maxRowCount = 5;
         
         const textarea = promptInputRef.current;
@@ -126,17 +128,35 @@ const Chat: React.FC = () => {
                         placeholder="Ask me any question &nbsp;🚀"
                     />
                     <div className="chat-window__footer__utils">
-                        <button className="chat-settings-button" onClick={(e) => {
-                            setShowChatSettings(true);
-                            e.stopPropagation();
-                        }}>
+                        <button
+
+                            className={showChatSettings ? "chat-settings-button active" : "chat-settings-button"}
+                            onClick={(e) => {
+                                setShowChatSettings(!showChatSettings);
+                                e.stopPropagation();
+                            }}
+                        >
                             <IoIosSettings />
                         </button>
-                        <button className="active">
+                        <button
+                            className={chatRequest.requestParameters.webSearch.enabled ? "active" : ""}
+                            onClick={() => {
+                                const updatedRequest = {...chatRequest};
+                                updatedRequest.requestParameters.webSearch.enabled = !updatedRequest.requestParameters.webSearch.enabled;
+                                setChatRequest(updatedRequest)
+                            }}
+                        >
                             <IoGlobeOutline />
                             Suche
                         </button>
-                        <button>
+                        <button
+                            className={chatRequest.requestParameters.vectorSearch.enabled ? "active" : ""}
+                            onClick={() => {
+                                const updatedRequest = {...chatRequest};
+                                updatedRequest.requestParameters.vectorSearch.enabled = !updatedRequest.requestParameters.vectorSearch.enabled;
+                                setChatRequest(updatedRequest)
+                            }}
+                        >
                             <IoDocument />
                             Dok. durchsuchen
                         </button>
@@ -146,10 +166,7 @@ const Chat: React.FC = () => {
                     </div>
                 </div>
             </div>
-            <div id="chat-settings" className={showChatSettings ? "" : "hidden"}>
-                Settings
-                {/* hier auch Kontext rein! */}
-            </div>
+            <ChatSettings show={showChatSettings} setShow={setShowChatSettings} />
         </>
     )
 }
