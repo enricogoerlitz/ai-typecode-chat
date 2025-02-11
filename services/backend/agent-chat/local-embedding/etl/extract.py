@@ -31,6 +31,7 @@ def run() -> None:
 
         try:
             _handle(file)
+            processed_files.append(file)
             utils.log(file, idx, count, "successfully processed")
 
         except Exception as e:
@@ -39,7 +40,6 @@ def run() -> None:
             error_files.append(file)
 
         finally:
-            processed_files.append(file)
             utils.write_meta(DESTINATION_FOLDER_PATH, meta)
 
 

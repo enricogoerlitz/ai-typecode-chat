@@ -2,6 +2,8 @@ resources/data/imt
 services/backend/agent-chat/local-embedding/documents/*.imt.txt
 services/backend/agent-chat/local-embedding//*.imt.txt
 services/frontend/agent-platform/src/assets/deviceTypesData.json
+services/backend/agent-chat/local-embedding/etl/data/00-master-data/*.xlsx
+services/backend/agent-chat/local-embedding/etl/data/*/*.pdf.txt*
 
 .vscode
 # Byte-compiled / optimized / DLL files
@@ -179,7 +181,3 @@ override.tf.json
 .terraform.lock.hcl
 .vscode/PythonImportHelper-v2-Completion.json
 PythonImportHelper-v2-Completion.json
-
-
-services/backend/agent-chat/local-embedding/etl/data/00-master-data/*.xlsx
-services/backend/agent-chat/local-embedding/etl/data/*/*.pdf.txt

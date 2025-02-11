@@ -29,7 +29,7 @@ class OpenAIEmbeddingModel:
         if resp.status_code == 429:
             raise Exception("RATE LIMIT ERROR " + resp.text)  # noqa errors.AIClientRateLimitError(resp)
         elif resp.status_code != 200:
-            raise Exception("EMBEDDING ERROR: " + resp.status_code + resp.text)  # noqa errors.RequestsException(resp)  noqa
+            raise Exception("EMBEDDING ERROR: " + str(resp.status_code) + resp.text)  # noqa errors.RequestsException(resp)  noqa
 
         return [
             embedding["embedding"]
