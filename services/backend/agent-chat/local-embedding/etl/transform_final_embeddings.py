@@ -73,7 +73,6 @@ def run() -> None:
 
 
 def _handle(file: str) -> None:
-    src_filename = file.replace(".txt", "")
     filepath = os.path.join(SOURCE_FOLDER_PATH, file)
 
     if not os.path.exists(filepath):
@@ -82,6 +81,7 @@ def _handle(file: str) -> None:
     with open(filepath, "r") as f:
         doc_json = json.loads(f.readline())
 
+    src_filename = doc_json["documentName"]
     pages = [_trim_to_token_limit(page) for page in doc_json["pages"]]
 
     batch_count = 25
@@ -109,12 +109,13 @@ def _handle(file: str) -> None:
     ]
 
     document = {
-        "documentName": src_filename,
+        "documentName": doc_json["documentName"],
+        "typeCodes": doc_json["typeCodes"],
         "pages": pages
     }
 
     filepath = os.path.join(DESTINATION_FOLDER_PATH, file + ".embeddings.json")
 
     with open(filepath, "w") as f:
-        document_json_str = json.dumps(document, indent=4)
+        document_json_str = json.dumps(document, indent=2)
         f.write(document_json_str)

@@ -61,7 +61,8 @@ def _handle(file: str) -> None:
     ]
 
     document = {
-        "documentName": file,
+        "documentName": doc_json["documentName"],
+        "typeCodes": doc_json["typeCodes"],
         "pages": pages
     }
 

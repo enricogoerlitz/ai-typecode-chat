@@ -62,9 +62,11 @@ def _handle(file: str, df_catalog: pd.DataFrame) -> None:
     ]
 
     # read file first line and parse to json
+    type_codes = [code for code in df_result["Typcode"].fillna("").astype(str).unique() if code != ""]  # noqa
 
     document = {
-        "documentName": file,
+        "documentName": doc_json["documentName"],
+        "typeCodes": type_codes,
         "pages": pages
     }
 

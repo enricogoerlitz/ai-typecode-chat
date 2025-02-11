@@ -12,7 +12,7 @@ from elasticsearch_dsl import (
 )
 
 
-INDEX_NAME = "device-type-agent-index"
+INDEX_NAME = "emtec-device-type-agent-index"
 
 
 _ = connections.create_connection(hosts=["http://localhost:9200"])
@@ -20,15 +20,11 @@ _ = connections.create_connection(hosts=["http://localhost:9200"])
 
 class IMTDeviceTypeDocument(Document):
     id = Keyword()
-    deviceID = Keyword()
-    deviceTypeID = Keyword()
-    documentID = Keyword()
+    typeCodes = Keyword(multi=True)
     documentName = Text(analyzer="standard")
     documentPageNumber = Integer()
     documentPageContent = Text(analyzer="standard")
     documentPageContentEmbedding = DenseVector(dims=3072)
-    documentPageSummary = Text(analyzer="standard")
-    metadata_json = Text()
 
     class Index:
         name = INDEX_NAME
@@ -86,14 +82,11 @@ class ElasticsearchIndex(IVectorSearchIndex):
                     continue
 
                 update_doc: IMTDeviceTypeDocument = update_doc[0]
-                update_doc.deviceID = doc.deviceID
-                update_doc.deviceTypeID = doc.deviceTypeID
-                update_doc.documentID = doc.documentID
                 update_doc.documentName = doc.documentName
+                update_doc.typeCodes = doc.typeCodes
                 update_doc.documentPageNumber = doc.documentPageNumber
                 update_doc.documentPageContent = doc.documentPageContent
                 update_doc.documentPageContentEmbedding = doc.documentPageContentEmbedding  # noqa
-                update_doc.metadata_json = doc.metadata_json
 
                 update_doc.save()
         except Exception as e:
@@ -106,6 +99,8 @@ class ElasticsearchIndex(IVectorSearchIndex):
             embeddings: list[float],
             max_result_count: int
     ) -> dict:
+        # TODO: add filter by typecode
+        # wahrscheinlich einfach for .knn filter -> filter().knn(...)
         query = {
             "search": Search(index=INDEX_NAME).knn(
                 field="documentPageContentEmbedding",
