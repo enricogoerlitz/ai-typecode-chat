@@ -18,6 +18,14 @@ const DeviceTypeOverview: React.FC = () => {
         )}
     */
 
+        
+    const filteredTypeCodes = typeCodes.filter(tcode => (
+        tcode.Typcode.includes(searchTerm) ||
+        tcode.GeraetID.includes(searchTerm) ||
+        tcode.Typ_Modell.includes(searchTerm) ||
+        tcode.Geraetebezeichnung.includes(searchTerm)
+    ));
+
     return (
         <div className="dto-container">
             <div className="dto-container__header">
@@ -42,7 +50,7 @@ const DeviceTypeOverview: React.FC = () => {
                             </tr>
                         </thead>
                         <tbody>
-                            {typeCodes.filter(tCode => tCode.Typcode.includes(searchTerm)).map((tCode) => (
+                            {filteredTypeCodes.map((tCode) => (
                                 <tr
                                     key={tCode.Typcode}
                                     onClick={() => setTypeCodeID(tCode.Typcode)}

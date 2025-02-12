@@ -8,7 +8,8 @@ from elasticsearch_dsl import (
     Text,
     Integer,
     connections,
-    Search
+    Search,
+    Q
 )
 
 
@@ -42,6 +43,13 @@ class IVectorSearchIndex(ABC):
         embeddings: list[float],
         max_result_count: int) -> dict: pass
 
+    @abstractmethod
+    def generate_query_by_typecode(
+        self,
+        embeddings: list[float],
+        max_result_count: int,
+        typeCode: str) -> dict: pass
+
     @staticmethod
     def create(
         index_type: Literal[
@@ -71,7 +79,8 @@ class ElasticsearchIndex(IVectorSearchIndex):
 
     def search(self, query: dict) -> list[dict]:
         s: Search = query["search"]
-        return [dict(hit) for hit in s.execute()]
+        max_result_count = query.get("max_result_count", 10)
+        return [dict(hit) for hit in s.execute()][:max_result_count]
 
     def put_documents(self, documents: list[IMTDeviceTypeDocument]) -> dict:
         try:
@@ -99,8 +108,6 @@ class ElasticsearchIndex(IVectorSearchIndex):
             embeddings: list[float],
             max_result_count: int
     ) -> dict:
-        # TODO: add filter by typecode
-        # wahrscheinlich einfach for .knn filter -> filter().knn(...)
         query = {
             "search": Search(index=INDEX_NAME).knn(
                 field="documentPageContentEmbedding",
@@ -108,6 +115,37 @@ class ElasticsearchIndex(IVectorSearchIndex):
                 num_candidates=max_result_count,
                 query_vector=embeddings
             )
+        }
+
+        return query
+
+    def generate_query_by_typecode(
+            self,
+            embeddings: list[float],
+            max_result_count: int,
+            typeCode: str
+    ) -> dict:
+        query = {
+            "search": Search(index=INDEX_NAME).query(
+                "bool",
+                must=[
+                    Q(
+                        "script_score",
+                        query={
+                            "bool": {
+                                "filter": [
+                                    {"terms": {"typeCodes": [typeCode]}}
+                                ]
+                            }
+                        },
+                        script={
+                            "source": "cosineSimilarity(params.query_vector, 'documentPageContentEmbedding') + 1.0",  # noqa
+                            "params": {"query_vector": embeddings}
+                        }
+                    )
+                ]
+            ),
+            "max_result_count": max_result_count
         }
 
         return query

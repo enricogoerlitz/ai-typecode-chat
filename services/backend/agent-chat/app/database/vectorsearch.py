@@ -43,7 +43,7 @@ class IVectorSearchIndex(ABC):
                 return ElasticsearchIndex(
                     host="",
                     port="",
-                    index_name=""
+                    index_name="emtec-device-type-agent-index"
                 )
 
         err = f"Index type must be 'AZURE_AI_SEARCH' or 'ELASTICSEARCH'"

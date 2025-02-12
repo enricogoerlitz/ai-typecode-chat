@@ -10,6 +10,7 @@ import etl.extract
 import etl.transform_content
 import etl.transform_content_cleanup
 import etl.transform_final_embeddings
+import etl.load_to_index
 
 from etl import utils
 
@@ -25,9 +26,11 @@ def main() -> None:
     # etl.transform_content_cleanup.run()
 
     utils.step = "TRANSFORM FINAL EMBEDDINGS"
-    etl.transform_final_embeddings.run()
-    
+    # etl.transform_final_embeddings.run()
 
+    utils.step = "LOAD EMBEDDINGS TO VECTOR-DB"
+    etl.load_to_index.run()
+    
 
 if __name__ == "__main__":
     main()

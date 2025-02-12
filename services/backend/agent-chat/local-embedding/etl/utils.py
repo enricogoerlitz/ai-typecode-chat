@@ -19,7 +19,7 @@ def dtime() -> str:
 
 def log(file: str, idx: int, count: int, msg: str) -> None:
     idx += 1
-    msg = f"{dtime()}\t{idx} / {count}\t{step}\t'File '{file} {msg}.'"
+    msg = f"{dtime()}\t{idx} / {count}\t{step}\t'File '{file}' {msg}."
     print(msg)
 
 
