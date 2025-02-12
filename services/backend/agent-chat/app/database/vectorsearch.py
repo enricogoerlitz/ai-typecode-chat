@@ -24,6 +24,13 @@ class IVectorSearchIndex(ABC):
         embeddings: list[float],
         max_result_count: int) -> dict: pass
 
+    @abstractmethod
+    def generate_query_by_typecode(
+        self,
+        embeddings: list[float],
+        max_result_count: int,
+        type_code: str) -> dict: pass
+
     @staticmethod
     def create(
         index_type: Literal[
@@ -100,8 +107,30 @@ class AzureAISearchIndex(IVectorSearchIndex):
                 }
             ],
             # "searchFields": "documentPageContent",  # Keyword search field
-            "select": "id, deviceID, deviceTypeID, documentID, documentName, documentPageNumber, documentPageContent, metadata_json",  # noqa
+            "select": "id, deviceID, deviceTypeID, documentID, documentName, documentPageNumber, documentPageContent",  # noqa
             "top": max_result_count
+        }
+
+        return query
+
+    def generate_query_by_typecode(
+            self,
+            embeddings: list[float],
+            max_result_count: int,
+            type_code: str
+    ) -> dict:
+        query = {
+            "vectorQueries": [
+                {
+                    "vector": embeddings,
+                    "k": 5,
+                    "fields": "documentPageContentEmbedding",
+                    "kind": "vector"
+                }
+            ],
+            "select": "id, typeCodes, documentName, documentPageNumber, documentPageContent",  # noqa
+            "top": max_result_count,
+            "filter": f"typeCodes/any(t: t eq '{type_code}')"
         }
 
         return query

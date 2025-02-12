@@ -18,10 +18,9 @@ const DeviceTypeOverview: React.FC = () => {
         )}
     */
 
-        
+    console.log(typeCodes)
     const filteredTypeCodes = typeCodes.filter(tcode => (
         tcode.Typcode.includes(searchTerm) ||
-        tcode.GeraetID.includes(searchTerm) ||
         tcode.Typ_Modell.includes(searchTerm) ||
         tcode.Geraetebezeichnung.includes(searchTerm)
     ));

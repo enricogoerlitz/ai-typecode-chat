@@ -1,0 +1,218 @@
+158142.pdf.txt.embeddings.json
+62321.pdf.txt.embeddings.json
+261602-ga_WFHD0087_it.pdf.txt.embeddings.json
+246088-ga_WFHD0923_en_Reference_SW v201_Rev.4.pdf.txt.embeddings.json
+248849-EBit-30-brosura[1].pdf.txt.embeddings.json
+62051.pdf.txt.embeddings.json
+162679.pdf.txt.embeddings.json
+64701.pdf.txt.embeddings.json
+230506-p_WFHD439_en.pdf.txt.embeddings.json
+254461-ga_WFHD0887_en_User Guide.pdf.txt.embeddings.json
+270239-ga_WFHD0578_it.pdf.txt.embeddings.json
+194354.pdf.txt.embeddings.json
+214221-ga_wfhd053, 054, 055, 056_getting started_Rev.B.0_jp.pdf.txt.embeddings.json
+212246-ga_WFHS266+andere_en_Care & Cleaning.pdf.txt.embeddings.json
+94070.pdf.txt.embeddings.json
+96754.pdf.txt.embeddings.json
+87271.pdf.txt.embeddings.json
+270250-ga_WFHD0458_fr.pdf.txt.embeddings.json
+66529.pdf.txt.embeddings.json
+156658.pdf.txt.embeddings.json
+214055-ga_wfhd053, 054, 055, 056_safety+standards_Rev.B.0_cn.pdf.txt.embeddings.json
+75603.pdf.txt.embeddings.json
+59323.pdf.txt.embeddings.json
+179940.pdf.txt.embeddings.json
+59906.pdf.txt.embeddings.json
+212485-ga_wfhd537, 038_contrast imaging_Rel.D.0_11.02_pl.pdf.txt.embeddings.json
+108753.pdf.txt.embeddings.json
+64564.pdf.txt.embeddings.json
+101662.pdf.txt.embeddings.json
+270875-ga_WFHD0962_en.pdf.txt.embeddings.json
+119138.pdf.txt.embeddings.json
+290414-ga_WFHD0870_en.pdf.txt.embeddings.json
+212488-ga_wfhd537, 038_standards_Rel.D.0_11.02_pl.pdf.txt.embeddings.json
+59938.pdf.txt.embeddings.json
+67075.pdf.txt.embeddings.json
+245148-ga_WFHD0546_en.pdf.txt.embeddings.json
+214696-ga_wfhd537, 038_controls-ref_Rel.D.0_nl.pdf.txt.embeddings.json
+246116-ga_WFHD0440_en_SW v202_Rev.3.pdf.txt.embeddings.json
+285876-p_WFHD0966_en_v3.pdf.txt.embeddings.json
+64688.pdf.txt.embeddings.json
+212463-ga_wfhd053, 054, 055, 056_safety+standards_Rev.A.1_pl.pdf.txt.embeddings.json
+94289.pdf.txt.embeddings.json
+66087.pdf.txt.embeddings.json
+87014.pdf.txt.embeddings.json
+293217-ga_WFHD0478_en.pdf.txt.embeddings.json
+215973-ga_wfhd537, 038_contrast imaging_Rel.D.0_11.02_fi.pdf.txt.embeddings.json
+61302.pdf.txt.embeddings.json
+256967-p_WFHD0949_en.pdf.txt.embeddings.json
+157480.pdf.txt.embeddings.json
+59499.pdf.txt.embeddings.json
+269744-ga_WFHD0961_en.pdf.txt.embeddings.json
+65339.pdf.txt.embeddings.json
+214053-ga_wfhd053, 054, 055, 056_safety+standards_Rev.A.0_cn(Simp).pdf.txt.embeddings.json
+216655-ga_WFHD693_Venue 40.pdf.txt.embeddings.json
+106846.pdf.txt.embeddings.json
+87557.pdf.txt.embeddings.json
+86649.pdf.txt.embeddings.json
+235652-p_s2_en_MyLabOmega -CardioVascular.pdf.txt.embeddings.json
+183150.pdf.txt.embeddings.json
+144446.pdf.txt.embeddings.json
+122709.pdf.txt.embeddings.json
+84046.pdf.txt.embeddings.json
+215911-ga_wfhd053, 054, 055, 056_transducer-ref_Rev.A.0_pt.pdf.txt.embeddings.json
+112875.pdf.txt.embeddings.json
+128317.pdf.txt.embeddings.json
+87569.pdf.txt.embeddings.json
+256149-p_WFHD0941.pdf.txt.embeddings.json
+147169.pdf.txt.embeddings.json
+284108-ga_WFHD0964_en.pdf.txt.embeddings.json
+65697.pdf.txt.embeddings.json
+263365-ga_WFHD0651_it.pdf.txt.embeddings.json
+261640-ga_WFHD0656_it.pdf.txt.embeddings.json
+65720.pdf.txt.embeddings.json
+270874-ga_WFHD0962_en_v2.pdf.txt.embeddings.json
+89524.pdf.txt.embeddings.json
+164541.pdf.txt.embeddings.json
+130901.pdf.txt.embeddings.json
+59949.pdf.txt.embeddings.json
+212058-ga_WFHD873_en_Advanced.pdf.txt.embeddings.json
+159783.pdf.txt.embeddings.json
+256393-ga_WFHD0943_fort.pdf.txt.embeddings.json
+64515.pdf.txt.embeddings.json
+117778.pdf.txt.embeddings.json
+95476.pdf.txt.embeddings.json
+125252.pdf.txt.embeddings.json
+184404.pdf.txt.embeddings.json
+263253-ga_WFHD0070_it.pdf.txt.embeddings.json
+156568.pdf.txt.embeddings.json
+59946.pdf.txt.embeddings.json
+245222-ga_WFHD0010_en_SW R8.x.x_Basic.pdf.txt.embeddings.json
+212757-ga_wfhd053, 054, 055, 056_transducer-ref_Rev.B.0_se.pdf.txt.embeddings.json
+285749-p_WFHD0965_es.pdf.txt.embeddings.json
+95479.pdf.txt.embeddings.json
+93625.pdf.txt.embeddings.json
+66065.pdf.txt.embeddings.json
+117777.pdf.txt.embeddings.json
+212492-ga_wfhd537, 038_acoustic quantification_Rel.D.0_pl.pdf.txt.embeddings.json
+187189.pdf.txt.embeddings.json
+65698.pdf.txt.embeddings.json
+101680.pdf.txt.embeddings.json
+263808-ga_WFHD0537_it.pdf.txt.embeddings.json
+96284.pdf.txt.embeddings.json
+263246-ga_WFHD0424_it.pdf.txt.embeddings.json
+65153.pdf.txt.embeddings.json
+246082-ga_WFHD0923_en_Reference_SW v203_Rev.4.pdf.txt.embeddings.json
+126667.pdf.txt.embeddings.json
+213889-ga_wfhd053, 054, 055, 056_getting started_Rev.B.0_gr.pdf.txt.embeddings.json
+125376.pdf.txt.embeddings.json
+234488-p_WFHD904_en.pdf.txt.embeddings.json
+241694-ga_WFHD0737_TransducersConsumables_D_R02.pdf.txt.embeddings.json
+246092-ga_WFHD0923_en_SW v204_Rev.5.pdf.txt.embeddings.json
+216608-ga_WFHD524_HDI 5000.pdf.txt.embeddings.json
+75591.pdf.txt.embeddings.json
+87293.pdf.txt.embeddings.json
+285750-p_WFHD0965_en.pdf.txt.embeddings.json
+285888-ga_WFHD0966.pdf.txt.embeddings.json
+245314-ga_WFHD0012_en_SW R9.x.x_User Guide.pdf.txt.embeddings.json
+87558.pdf.txt.embeddings.json
+113141.pdf.txt.embeddings.json
+89515.pdf.txt.embeddings.json
+84049.pdf.txt.embeddings.json
+281051-p_WFHD0866_en.pdf.txt.embeddings.json
+238617-p_WFHD0438.pdf.txt.embeddings.json
+109941.pdf.txt.embeddings.json
+127637.pdf.txt.embeddings.json
+142385.pdf.txt.embeddings.json
+156556.pdf.txt.embeddings.json
+194171.pdf.txt.embeddings.json
+107990.pdf.txt.embeddings.json
+82632.pdf.txt.embeddings.json
+259067-ga_WFHD0102_en.PDF.txt.embeddings.json
+125263.pdf.txt.embeddings.json
+216615-ga_WFHD590_CX50.pdf.txt.embeddings.json
+191040.pdf.txt.embeddings.json
+64524.pdf.txt.embeddings.json
+65336.pdf.txt.embeddings.json
+64687.pdf.txt.embeddings.json
+66433.pdf.txt.embeddings.json
+108035.pdf.txt.embeddings.json
+270703-p_WFHS1149_en.pdf.txt.embeddings.json
+172926.pdf.txt.embeddings.json
+216658-ga_WFHD694_System FiVe.pdf.txt.embeddings.json
+102872.pdf.txt.embeddings.json
+239154-ga_WFHD0914_20200326_s234_ Erweiterte Funktionen 1 (Rev.3).pdf.txt.embeddings.json
+245313-ga_WFHD0012_SW R9.x.x_Bedienung.pdf.txt.embeddings.json
+176879.pdf.txt.embeddings.json
+170000.pdf.txt.embeddings.json
+106574.pdf.txt.embeddings.json
+270197-ga_WFHD0469_fr.pdf.txt.embeddings.json
+263205-ga_WFHD0854.pdf.txt.embeddings.json
+87517.pdf.txt.embeddings.json
+62060.pdf.txt.embeddings.json
+212117-ga_wfhd537, 038_acoustic-densitometry_Rel.D.0_cz.pdf.txt.embeddings.json
+140702.pdf.txt.embeddings.json
+245112-ga_WFHD0069_en_Quick.pdf.txt.embeddings.json
+151802.pdf.txt.embeddings.json
+248269-venue-fit_brochure_pocushub_eu_JB02161XX_2.18.21_low-1[1].pdf.txt.embeddings.json
+228529-ga_WFHD897_es_V204_User.pdf.txt.embeddings.json
+65675.pdf.txt.embeddings.json
+87240.pdf.txt.embeddings.json
+270209-ga_WFHD0460_it.pdf.txt.embeddings.json
+61803.pdf.txt.embeddings.json
+241698-ga_WFHD0737_VascularSection_D_R01.pdf.txt.embeddings.json
+233566-p_WFHD900_en.pdf.txt.embeddings.json
+162763.pdf.txt.embeddings.json
+264339-p_WFHD0956_en_US.pdf.txt.embeddings.json
+82643.pdf.txt.embeddings.json
+156657.pdf.txt.embeddings.json
+66526.pdf.txt.embeddings.json
+184237.pdf.txt.embeddings.json
+175193.pdf.txt.embeddings.json
+86982.pdf.txt.embeddings.json
+233623-ga_WFHD831_Nachtrag1.pdf.txt.embeddings.json
+213896-ga_wfhd537, 038_system-basics_Rel.D.0_gr.pdf.txt.embeddings.json
+239064-ga_WFHD0914_20200326_s192_ Messungen 2 (Rev.2).pdf.txt.embeddings.json
+242014-ga_WFHD0737_201110_s100_ -Getting Started(Rev.02).pdf.txt.embeddings.json
+64555.pdf.txt.embeddings.json
+135255.pdf.txt.embeddings.json
+256894-p_WFHD0945_es.pdf.txt.embeddings.json
+254472-ga_WFHD0927.pdf.txt.embeddings.json
+285877-p_WFHD0966_en_v2.pdf.txt.embeddings.json
+141595.pdf.txt.embeddings.json
+275968-p_WJVF0009_en.pdf.txt.embeddings.json
+113130.pdf.txt.embeddings.json
+245153-ga_WFHD0651_en_Quick.pdf.txt.embeddings.json
+187893.pdf.txt.embeddings.json
+79215.pdf.txt.embeddings.json
+99198.pdf.txt.embeddings.json
+101851.pdf.txt.embeddings.json
+256966-p_WFHD0949_en_v2.pdf.txt.embeddings.json
+133122.pdf.txt.embeddings.json
+215918-ga_wfhd053, 054, 055, 056_safety+standards_Rev.A.0_pt.pdf.txt.embeddings.json
+86637.pdf.txt.embeddings.json
+79165.pdf.txt.embeddings.json
+249296-EBUS-TBNA-Procedure_EN_20170828[1].pdf.txt.embeddings.json
+191510.pdf.txt.embeddings.json
+87253.pdf.txt.embeddings.json
+64578.pdf.txt.embeddings.json
+216665-ga_WFHD731_709_ClearVue 350_Clearvue 550.pdf.txt.embeddings.json
+65666.pdf.txt.embeddings.json
+134833.pdf.txt.embeddings.json
+140711.pdf.txt.embeddings.json
+245081-ga_WFHD0184_es.pdf.txt.embeddings.json
+59924.pdf.txt.embeddings.json
+77199.pdf.txt.embeddings.json
+234135-ga_WFHD901.pdf.txt.embeddings.json
+246087-ga_WFHD0923_SW v202_Rev.6.pdf.txt.embeddings.json
+114204.pdf.txt.embeddings.json
+62303.pdf.txt.embeddings.json
+140336.pdf.txt.embeddings.json
+255295-ga_WFHD0444_en_R2.x.x_Rev.5.pdf.txt.embeddings.json
+108026.pdf.txt.embeddings.json
+64694.pdf.txt.embeddings.json
+62073.pdf.txt.embeddings.json
+212056-p_WFHD873_en.pdf.txt.embeddings.json
+106567.pdf.txt.embeddings.json
+214064-ga_wfhd053, 054, 055, 056_transducer-ref_Rev.A.1_cn(Simp).pdf.txt.embeddings.json
+87008.pdf.txt.embeddings.json

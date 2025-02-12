@@ -24,14 +24,14 @@ resource "azurerm_key_vault" "main" {
   })
 }
 
-resource "azurerm_key_vault" "aihub" {
-  name                     = "${var.project_name}-aihub-${terraform.workspace}-${random_string.kv_name.id}-kv"
-  location                 = var.eastus_location
-  resource_group_name      = azurerm_resource_group.main.name
-  tenant_id                = data.azurerm_client_config.current.tenant_id
-  sku_name                 = "standard"
-  purge_protection_enabled = false
-}
+# resource "azurerm_key_vault" "aihub" {
+#   name                     = "${var.project_name}-aihub-${terraform.workspace}-${random_string.kv_name.id}-kv"
+#   location                 = var.eastus_location
+#   resource_group_name      = azurerm_resource_group.main.name
+#   tenant_id                = data.azurerm_client_config.current.tenant_id
+#   sku_name                 = "standard"
+#   purge_protection_enabled = false
+# }
 
 resource "azurerm_role_assignment" "me_main_kv_administrator" {
   scope                = azurerm_key_vault.main.id
@@ -39,11 +39,11 @@ resource "azurerm_role_assignment" "me_main_kv_administrator" {
   principal_id         = data.azurerm_client_config.current.object_id
 }
 
-resource "azurerm_role_assignment" "me_aihub_kv_administrator" {
-  scope                = azurerm_key_vault.aihub.id
-  role_definition_name = "Key Vault Administrator"
-  principal_id         = data.azurerm_client_config.current.object_id
-}
+# resource "azurerm_role_assignment" "me_aihub_kv_administrator" {
+#   scope                = azurerm_key_vault.aihub.id
+#   role_definition_name = "Key Vault Administrator"
+#   principal_id         = data.azurerm_client_config.current.object_id
+# }
 
 # resource "azurerm_role_assignment" "function_app_kv_secrets_user" {
 #   scope                = azurerm_key_vault.main.id

@@ -185,7 +185,6 @@ class ChatPUTYieldStateObject:
     def next_step(self, next_step: str) -> None:
         self.steps[self.currentStep]["state"] = "FINISHED"
 
-        self.steps[next_step]
         self.steps[next_step]["state"] = "STARTED"
         self.currentStep = next_step
 

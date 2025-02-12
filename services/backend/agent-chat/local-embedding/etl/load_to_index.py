@@ -3,7 +3,7 @@ import traceback
 import json
 
 from etl import utils
-from vectorindex import vector_search_index, IMTDeviceTypeDocument
+from vectorindex import vector_search_index
 
 
 SOURCE_FOLDER_PATH = "./etl/data/04-transform-final-embeddings"
@@ -24,6 +24,7 @@ def run() -> None:
         except Exception as e:
             traceback.print_exc()
             print("RUN ERROR:", e)
+            break
 
 
 def _handle(file: str) -> None:
@@ -39,15 +40,14 @@ def _handle(file: str) -> None:
     doc_pages = doc_json["pages"]
     type_codes = doc_json["typeCodes"]
     pages = [
-        IMTDeviceTypeDocument(
-            id=page["id"],
-            typeCodes=type_codes,
-            documentName=doc_name,
-            documentPageNumber=page["documentPageNumber"],
-            documentPageContent=page["documentPageContent"],
-            documentPageContentEmbedding=page["documentPageContentEmbedding"]
-        )
-        for page in doc_pages
+       {
+            "id": page["id"],
+            "typeCodes": type_codes,
+            "documentName": doc_name,
+            "documentPageNumber": page["documentPageNumber"],
+            "documentPageContent": page["documentPageContent"],
+            "documentPageContentEmbedding": page["documentPageContentEmbedding"]  # noqa
+        } for page in doc_pages
     ]
 
     vector_search_index.put_documents(pages)

@@ -1,3 +1,6 @@
+import requests
+import gvars
+
 from typing import Literal
 from abc import ABC, abstractmethod
 from flask import Response
@@ -58,13 +61,13 @@ class IVectorSearchIndex(ABC):
         ]
     ) -> 'IVectorSearchIndex':
         match index_type:
-            # case "AZURE_AI_SEARCH":
-            #     return AzureAISearchIndex(
-            #         service_name=gvars.SEARCH_SERVICE_NAME,
-            #         index_name=gvars.SEARCH_SERVICE_INDEX_NAME,
-            #         api_key=gvars.SEARCH_SERVICE_API_KEY,
-            #         api_version=gvars.SEARCH_SERVICE_API_VERSION
-            #     )
+            case "AZURE_AI_SEARCH":
+                return AzureAISearchIndex(
+                    service_name=gvars.SEARCH_SERVICE_NAME,
+                    index_name=gvars.SEARCH_SERVICE_INDEX_NAME,
+                    api_key=gvars.SEARCH_SERVICE_API_KEY,
+                    api_version=gvars.SEARCH_SERVICE_API_VERSION
+                )
             case "ELASTICSEARCH":
                 return ElasticsearchIndex()
 
@@ -151,4 +154,94 @@ class ElasticsearchIndex(IVectorSearchIndex):
         return query
 
 
-vector_search_index = IVectorSearchIndex.create("ELASTICSEARCH")
+class AzureAISearchIndex(IVectorSearchIndex):
+    def __init__(
+            self,
+            service_name: str,
+            index_name: str,
+            api_key: str,
+            api_version: str
+    ) -> None:
+        super().__init__()
+
+        self._put_endpoint = f"https://{service_name}.search.windows.net/indexes/{index_name}/docs/index?api-version={api_version}"  # noqa
+        self._query_endpoint = f"https://{service_name}.search.windows.net/indexes/{index_name}/docs/search?api-version={api_version}"  # noqa
+        self._api_key = api_key
+
+    def search(self, query: dict) -> list[dict]:
+        headers = self._get_json_headers()
+        resp = requests.post(self._query_endpoint, headers=headers, json=query)
+
+        if resp.status_code != 200:
+            print("ERROR:", resp.status_code, resp.text)
+            raise Exception("# errors.VectorSearchRequestException(resp)")
+
+        return resp.json()["value"]
+
+    def put_documents(self, documents: list) -> dict:
+        if not isinstance(documents, list):
+            raise TypeError("put_documents expected an list for 'documents'")
+
+        headers = self._get_json_headers()
+        payload = {
+            "value": documents
+        }
+        resp = requests.post(self._put_endpoint, headers=headers, json=payload)
+
+        if resp.status_code != 200:
+            raise Exception("# errors.VectorSearchRequestException(resp)")
+
+        return resp.json()
+
+    def generate_query(
+            self,
+            embeddings: list[float],
+            max_result_count: int
+    ) -> dict:
+        query = {
+            "vectorQueries": [
+                {
+                    "vector": embeddings,
+                    "k": 5,
+                    "fields": "documentPageContentEmbedding",
+                    "kind": "vector"
+                }
+            ],
+            "select": "id, typeCodes, documentName, documentPageNumber, documentPageContent",  # noqa
+            "top": max_result_count
+        }
+
+        return query
+
+    def generate_query_by_typecode(
+            self,
+            embeddings: list[float],
+            max_result_count: int,
+            typeCode: str
+    ) -> dict:
+        query = {
+            "vectorQueries": [
+                {
+                    "vector": embeddings,
+                    "k": 5,
+                    "fields": "documentPageContentEmbedding",
+                    "kind": "vector"
+                }
+            ],
+            "select": "id, typeCodes, documentName, documentPageNumber, documentPageContent",  # noqa
+            "top": max_result_count,
+            "filter": f"typeCodes/any(t: t eq '{typeCode}')"
+        }
+
+        return query
+
+    def _get_json_headers(self) -> dict:
+        headers = {
+            "Content-Type": "application/json",
+            "api-key": self._api_key
+        }
+
+        return headers
+
+
+vector_search_index = IVectorSearchIndex.create("AZURE_AI_SEARCH")

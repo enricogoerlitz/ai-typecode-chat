@@ -99,6 +99,7 @@ class SERPResponseObject:
     def as_result_string(self) -> str:
         return str(self.obj) if "websearch_summary" not in self.obj else self.obj["websearch_summary"]
 
+
 class WebSearchSERPClient:
     def __init__(
             self,

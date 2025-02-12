@@ -1,7 +1,5 @@
 # flake8: noqa
 
-import json
-
 from typing import Iterator, Callable
 
 from logger import logger
@@ -12,6 +10,7 @@ from services.websearch.v1.websearch import (
     fetch_url_content
 )
 from database.vectorsearch import vector_search_index
+from utils.openai import trim_to_token_limit
 from utils.chat import (
     ChatMessagePayload,
     StreamResponse,
@@ -169,14 +168,15 @@ class AIPromptFlow:
 
     def _exec_deep_websearch(self, serp_obj: SERPResponseObject) -> Iterator:
         self.state.next_step(EXECUTE_DEEP_SEARCH)
-        self.state.append_message("Executing deep search for you:", 1)
+        # self.state.append_message("Executing deep search for you:", 1)
         yield
 
         deep_search_results = []
         for link in serp_obj.get_links():
             self.state.append_message(f"Processing link: {link}", 1)
 
-            html_text = fetch_url_content(link)
+            html_text = trim_to_token_limit(fetch_url_content(link), 1000, "gpt-4o")
+
             for summary in self._summarize_html_content(html_content=html_text):
                 yield
 
@@ -201,11 +201,12 @@ class AIPromptFlow:
 
         self.state.next_step(EXECUTE_VECTOR_SEARCH)
 
-        embeddings = aiclient.embedding_model.embed(message)[0]
+        embeddings = aiclient.embedding_model.embed(trim_to_token_limit(message))[0]
         search_results = vector_search_index.search(
-            query=vector_search_index.generate_query(
+            query=vector_search_index.generate_query_by_typecode(
                 embeddings=embeddings,
-                max_result_count=max_result_count
+                max_result_count=max_result_count,
+                type_code=self.cnf.context_device_type_code
             )
         )
 
@@ -329,20 +330,24 @@ ducument_page_content:
         system_context = """You are an AI assistant specializing in constructing highly effective Google search queries.
 
 ### **Task:**
-Your goal is to generate an optimized Google search query based on the user's message.  
+Your goal is to generate an optimized Google search query based on the user's message while considering historical context.  
 
 ### **Input Source:**
-1. **[USER MESSAGE]** – The user's original query. Use this as the basis to generate the best possible Google search query.
+1. **[CHAT HISTORY]** - The conversation history until now.
+2. **[USER MESSAGE]** – The user's original query. Use this as the basis to generate the best possible Google search query.
 
 ### **Instructions:**
-- Output **only** the optimized Google search query—nothing else.
+- Leverage **chat history** when applicable:
+  - If the user's message builds upon previous queries or document search results, extract relevant past queries to generate a **context-aware** vector query.
+  - If the current message alone is insufficient for vector search, use historical context to enhance the query.
 - The query should be **short, precise, and highly relevant** to the user's intent.  
 - Focus on structuring the query in a way that maximizes the effectiveness of Google's search algorithm.
 - Avoid including explanations, formatting, or any additional text.
+- Output **only** the optimized Google search query—nothing else.
 """
 
         resp: StreamResponse
-        for resp in aiclient.chat.submit_stream([
+        for resp in aiclient.chat.submit_stream(self._chat_history + [
             {"role": "system", "content": system_context},
             {"role": "user", "content": self._user_message},
         ], model=self._model, current_message=self.state.message):
@@ -357,7 +362,7 @@ Your goal is to generate an optimized Google search query based on the user's me
 
     def _optimize_vectorsearch_query(self) -> Iterator[str]:
         self.state.next_step(OPTIMIZE_VECTOR_SEARCH_QUERY)
-        self.state.append_message("We are optimizing your message for besser vector search:", 1)
+        # self.state.append_message("We are optimizing your message for besser vector search:", 1)
         yield
 
         websearch_result_str = self._websearch_result.get("result_string", "no results")
@@ -367,18 +372,22 @@ Your goal is to generate an optimized Google search query based on the user's me
         system_context = f"""You are an AI assistant specializing in constructing highly effective Azure AI Search Index vector queries.
 
 ### **Task:**
-Your goal is to generate an optimized vector search query based on the user's message.
+Your goal is to generate an optimized vector search query based on the user's message while considering historical context.  
 You may also receive web search results, which can provide additional context.
 
 ### **Input Sources:**
-1. **[USER MESSAGE]** – The user's original query, which you should use to construct the best possible vector search query.
-2. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may contain relevant details.
-- If no web search was executed, you will receive: *"no web search executed."*
-- Use web search results *only* if they add meaningful context.
+1. **[CHAT HISTORY]** - The conversation history until now.
+2. **[USER MESSAGE]** – The user's latest query, which should be used to construct the best possible vector search query.
+3. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may contain relevant details.
+   - If no web search was executed, you will receive: *"no web search executed."*
+   - Use web search results *only* if they add meaningful context.
 
 ### **Instructions:**
-- Output **only** the optimized vector search query — nothing else.
-- Ensure the query is concise, relevant, and effective for embedding-based search retrieval.
+- Construct vector search queries that are concise, relevant, and effective for embedding-based search retrieval.
+- Leverage **chat history** when applicable:
+  - If the user's message builds upon previous queries or document search results, extract relevant past queries to generate a **context-aware** vector query.
+  - If the current message alone is insufficient for vector search, use historical context to enhance the query.
+- Output **only** the optimized vector search query—nothing else.
 - Do **not** include explanations, formatting, or extra text.
 
 Here is the provided information:
@@ -388,7 +397,7 @@ Here is the provided information:
 """
 
         resp: StreamResponse
-        for resp in aiclient.chat.submit_stream([
+        for resp in aiclient.chat.submit_stream(self._chat_history + [
             {"role": "system", "content": system_context},
             {"role": "user", "content": self._user_message},
         ], model=self._model, current_message=self.state.message):
@@ -403,7 +412,7 @@ Here is the provided information:
 
     def _summarize_websearch_results(self, serp_obj: SERPResponseObject) -> Iterator[str]:
         self.state.next_step(OPTIMIZE_WEB_SEARCH_RESULT)
-        self.state.append_message("Optimizing the web search results\n", 2)
+        # self.state.append_message("Optimizing the web search results\n", 2)
         yield
 
         websearch_result_str = str(serp_obj.obj)

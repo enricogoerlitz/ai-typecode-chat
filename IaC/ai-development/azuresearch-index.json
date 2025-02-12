@@ -13,30 +13,8 @@
             "key": true
         },
         {
-            "name": "deviceID",
-            "type": "Edm.String",
-            "searchable": false,
-            "filterable": true,
-            "retrievable": true,
-            "stored": true,
-            "sortable": false,
-            "facetable": false,
-            "key": false
-        },
-        {
-            "name": "deviceTypeID",
-            "type": "Edm.String",
-            "searchable": false,
-            "filterable": true,
-            "retrievable": true,
-            "stored": true,
-            "sortable": false,
-            "facetable": false,
-            "key": false
-        },
-        {
-            "name": "documentID",
-            "type": "Edm.String",
+            "name": "typeCodes",
+            "type": "Collection(Edm.String)",
             "searchable": false,
             "filterable": true,
             "retrievable": true,
@@ -49,7 +27,7 @@
             "name": "documentName",
             "type": "Edm.String",
             "searchable": true,
-            "filterable": false,
+            "filterable": true,
             "retrievable": true,
             "stored": true,
             "sortable": false,
@@ -92,17 +70,6 @@
             "key": false,
             "dimensions": 3072,
             "vectorSearchProfile": "contentVector_profile"
-        },
-        {
-            "name": "metadata_json",
-            "type": "Edm.String",
-            "searchable": false,
-            "filterable": false,
-            "retrievable": true,
-            "stored": true,
-            "sortable": false,
-            "facetable": false,
-            "key": false
         }
     ],
     "scoringProfiles": [],
