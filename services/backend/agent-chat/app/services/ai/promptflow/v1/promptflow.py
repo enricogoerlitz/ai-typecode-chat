@@ -11,7 +11,7 @@ from services.websearch.v1.websearch import (
 )
 from database.vectorsearch import vector_search_index
 from utils.openai import trim_to_token_limit
-from utils.chat import (
+from utils.chats import (
     ChatMessagePayload,
     StreamResponse,
     ChatPUTYieldStateObject,
@@ -111,6 +111,7 @@ class AIPromptFlow:
             self.state.statusCode = 500
 
             yield self.state.to_yield()
+
         finally:
             add_system_message(
                 chat_id=self._chat_id,
@@ -416,27 +417,6 @@ Here is the provided information:
         yield
 
         websearch_result_str = str(serp_obj.obj)
-
-        # system_context = f"""You are an AI assistant specializing in summarizing poorly structured text (inkl. JSON-Objects as string) based on user queries.
-
-        # ### **Task:**
-        # Summarize the following unstructured text in relation to the user message.
-        # Ensure the summary is **concise, relevant, and correct**.
-
-        # ### **Input Sources:**
-        # 1. **[USER MESSAGE]** – The user's original query, which you should use to construct the best possible summary of the data.
-        # 2. **[WEBSEARCH RESULTS]** – Information gathered from web searches, which may contain relevant details.
-
-
-        # ### **Instructions:**
-        # - Ensure the summary is concise and relevant.
-        # - Do include formatting (markdown).
-
-        # Here is the provided information:
-
-        # ### [WEBSEARCH RESULTS]
-        # {websearch_result_str}
-        # """
 
         system_context = f"""You are an AI assistant specializing in **comprehensive summarization** of poorly structured text (including JSON objects as strings) based on user queries.
 

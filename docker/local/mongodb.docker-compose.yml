@@ -1,0 +1,19 @@
+name: emtec-ai-device-type-agent
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb2
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - my_network2
+
+volumes:
+  mongodb_data:
+
+networks:
+  my_network2:

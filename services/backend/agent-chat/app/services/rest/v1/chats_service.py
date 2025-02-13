@@ -3,7 +3,7 @@ from flask import Response
 from typing import Iterator
 
 from logger import logger
-from utils.chat import ChatMessagePayload
+from utils.chats import ChatMessagePayload
 from services.ai.promptflow.v1 import promptflow
 from exc import http_errors, errors
 from database.document import chatdb

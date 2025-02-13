@@ -7,8 +7,8 @@ load_dotenv("./.env")
 
 import etl.extract
 import etl.transform_content
-import etl.transform_final_embeddings
-import etl.load_to_index
+# import etl.transform_final_embeddings
+# import etl.load_to_index
 
 from etl import utils
 

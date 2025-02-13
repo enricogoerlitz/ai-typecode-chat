@@ -8,7 +8,7 @@ from exc import errors
 from abc import ABC, abstractmethod
 from typing import Iterator, Literal
 from requests import Response
-from utils.chat import StreamResponse
+from utils.chats import StreamResponse
 
 
 class IChatModel(ABC):

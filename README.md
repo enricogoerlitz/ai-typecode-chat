@@ -1,4 +1,8 @@
-# 🎓 Project: emtec-ai-devicetype-agent
+# 🎓 Project: emtec-ai-typecode-chat
+
+## Chatbot
+
+![Chatbot](resources/assets/IMT-Chatbot.png)
 
 ## Project Architecture
 
@@ -6,14 +10,10 @@
 
 ![High-Level Conceptual Architecture of the Project](resources/architecture/concept-architecture-v1.drawio.png)
 
+### Used APIs
 
-### API
-
-- SERP API => WebSearch
-
-## Chatbot
-
-![Chatbot](resources/assets/IMT-Chatbot.png)
+- **Websearch:** https://app.scaleserp.com/
+- **LLM Models:** https://platform.openai.com/
 
 ## Further improvements
 

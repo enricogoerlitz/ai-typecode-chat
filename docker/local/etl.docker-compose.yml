@@ -1,0 +1,13 @@
+name: "emtec-ai-typecode-etl"
+
+services:
+  etl:
+    build:
+      context: ../../services/backend/agent-chat/local-embedding
+      dockerfile: ../../../../docker/images/etl.Dockerfile
+    container_name: typecode-etl
+    environment:
+      - TESSDATA_PREFIX=/usr/share/tesseract-ocr/4.00/tessdata
+    volumes:
+      - ../../services/backend/agent-chat/local-embedding:/app
+    command: ["python", "app.py"]
