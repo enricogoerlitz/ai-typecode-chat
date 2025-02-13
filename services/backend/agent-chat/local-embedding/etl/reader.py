@@ -1,9 +1,13 @@
+import os
 import pdfplumber
 import pytesseract
 import traceback
 
 from multiprocessing import Pool
 from pdf2image import convert_from_path
+
+
+PROCESS_CORS = int(os.getenv("PROCESS_CORS", "8"))
 
 
 def prepare_pdf_content(filepath: str) -> list[dict]:
@@ -19,6 +23,7 @@ def prepare_pdf_content(filepath: str) -> list[dict]:
         ]
 
         return pages
+
     except Exception as e:
         traceback.print_exc()
         print("ERR:", e)
@@ -27,8 +32,9 @@ def prepare_pdf_content(filepath: str) -> list[dict]:
 
 def _extract_pdf_text_ocr(filepath) -> list[str]:
     images = convert_from_path(filepath)
-    with Pool(processes=8) as pool:
+    with Pool(processes=PROCESS_CORS) as pool:
         pages = pool.map(pytesseract.image_to_string, images)
+
     return pages
 
 

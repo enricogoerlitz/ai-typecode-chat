@@ -3,22 +3,13 @@ import { ChatContext, IChatContext } from "../../context/chatContext.tsx";
 import deviceTypeData from "../../assets/deviceTypesData.json";
 import "./DeviceTypesOverview.scss"
 
+
 const typeCodes: Array<any> = deviceTypeData;
 
 const DeviceTypeOverview: React.FC = () => {
     const { setTypeCodeID, typeCode } = useContext(ChatContext) as IChatContext;
     const [searchTerm, setSearchTerm] = useState("")
 
-    /*
-        const markDownData = "```json\n" + JSON.stringify(typeCode, null, 4) + "\n```"
-        {typeCode && (
-            <div className="dto-content-container__typecode-json">
-                <ReactMarkdown>{markDownData}</ReactMarkdown>
-            </div>
-        )}
-    */
-
-    console.log(typeCodes)
     const filteredTypeCodes = typeCodes.filter(tcode => (
         tcode.Typcode.includes(searchTerm) ||
         tcode.Typ_Modell.includes(searchTerm) ||

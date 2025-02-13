@@ -3,7 +3,6 @@ import gvars
 
 from typing import Literal
 from abc import ABC, abstractmethod
-from flask import Response
 from elasticsearch_dsl import (
     Document,
     DenseVector,
@@ -102,8 +101,7 @@ class ElasticsearchIndex(IVectorSearchIndex):
 
                 update_doc.save()
         except Exception as e:
-            resp = Response({"error": str(e)}, 400)
-            print(resp)
+            print(e)
             raise Exception("# TODO: errors.VectorSearchRequestException(resp)")  # noqa
 
     def generate_query(

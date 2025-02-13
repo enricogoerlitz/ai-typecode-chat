@@ -1,3 +1,4 @@
+import os
 import json
 import pandas as pd
 
@@ -24,7 +25,7 @@ def log(file: str, idx: int, count: int, msg: str) -> None:
 
 
 def read_meta(folder: str) -> dict:
-    path = "/".join([folder, META_FILENAME])
+    path = os.path.join(folder, META_FILENAME)
     with open(path, "r") as f:
         data = json.loads(f.read())
 
@@ -32,7 +33,7 @@ def read_meta(folder: str) -> dict:
 
 
 def write_meta(folder: str, data: dict) -> dict:
-    path = "/".join([folder, META_FILENAME])
+    path = os.path.join(folder, META_FILENAME)
     with open(path, "w") as f:
         f.write(json.dumps(data, indent=3))
 

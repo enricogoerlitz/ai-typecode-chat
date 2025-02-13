@@ -1,6 +1,7 @@
 import os
 import traceback
 import json
+import pandas as pd
 
 from etl import utils
 from etl import reader
@@ -30,7 +31,7 @@ def run() -> None:
             continue
 
         try:
-            _handle(file)
+            _handle(file, df_catalog)
             processed_files.append(file)
             utils.log(file, idx, count, "successfully processed")
 
@@ -41,17 +42,22 @@ def run() -> None:
 
         finally:
             utils.write_meta(DESTINATION_FOLDER_PATH, meta)
+            break  # DEBUG
 
 
-def _handle(file: str) -> None:
+def _handle(file: str, df_catalog: pd.DataFrame) -> None:
     filepath = os.path.join(SOURCE_FOLDER_PATH, file)
     pages = reader.prepare_pdf_content(filepath)
 
     if pages is None:
         raise Exception(f"Error at file '{file}'.")
 
+    df_result = df_catalog[df_catalog["DokName"] == file]
+    type_codes = [code for code in df_result["Typcode"].fillna("").astype(str).unique() if code != ""]  # noqa
+
     document = {
         "documentName": file,
+        "typeCodes": type_codes,
         "pages": pages
     }
 
